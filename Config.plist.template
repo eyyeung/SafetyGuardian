@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>VLLM_SERVER_URL</key>
+	<string>http://YOUR_SERVER_IP:8000/v1</string>
+	<key>ELEVENLABS_API_KEY</key>
+	<string>YOUR_ELEVENLABS_API_KEY</string>
+	<key>ELEVENLABS_BASE_URL</key>
+	<string>https://api.elevenlabs.io/v1</string>
+	<key>VOICE_ID</key>
+	<string>21m00Tcm4TlvDq8ikWAM</string>
+</dict>
+</plist>

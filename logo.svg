@@ -1,0 +1,42 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background gradient -->
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#4A90E2;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#357ABD;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="shieldGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#5CB85C;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#449D44;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background rounded square -->
+  <rect width="1024" height="1024" rx="180" fill="url(#bgGradient)"/>
+
+  <!-- Shield outline (safety/protection symbol) -->
+  <path d="M 512 150 L 750 250 L 750 450 Q 750 700 512 850 Q 274 700 274 450 L 274 250 Z"
+        fill="url(#shieldGradient)"
+        stroke="#FFFFFF"
+        stroke-width="20"/>
+
+  <!-- Eye symbol (vision/detection) -->
+  <ellipse cx="512" cy="450" rx="180" ry="100" fill="#FFFFFF" opacity="0.9"/>
+  <circle cx="512" cy="450" r="70" fill="#357ABD"/>
+  <circle cx="512" cy="450" r="40" fill="#2C3E50"/>
+  <circle cx="530" cy="430" r="15" fill="#FFFFFF" opacity="0.8"/>
+
+  <!-- Walking path/route indicator -->
+  <path d="M 380 580 Q 450 600 512 580 Q 574 600 644 580"
+        stroke="#FFFFFF"
+        stroke-width="12"
+        fill="none"
+        stroke-linecap="round"
+        opacity="0.7"/>
+
+  <!-- Small guardian stars/sparkles -->
+  <circle cx="350" cy="320" r="8" fill="#FFFFFF" opacity="0.8"/>
+  <circle cx="674" cy="320" r="8" fill="#FFFFFF" opacity="0.8"/>
+  <circle cx="420" cy="680" r="6" fill="#FFFFFF" opacity="0.6"/>
+  <circle cx="604" cy="680" r="6" fill="#FFFFFF" opacity="0.6"/>
+</svg>
