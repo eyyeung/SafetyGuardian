@@ -24,10 +24,14 @@ class CosmosAPI {
 
         // Retry logic with exponential backoff
         for attempt in 0..<AppConfiguration.maxRetries {
+            try Task.checkCancellation()
             do {
                 let result = try await performAnalysis(base64Image)
                 return result
             } catch {
+                if error is CancellationError {
+                    throw error
+                }
                 lastError = error
                 print("Cosmos API attempt \(attempt + 1) failed: \(error.localizedDescription)")
 
@@ -115,5 +119,26 @@ class CosmosAPI {
         request.httpBody = try? JSONEncoder().encode(cosmosRequest)
 
         return request
+    }
+
+    // MARK: - Health Check
+
+    func checkHealth() async throws {
+        guard let url = AppConfiguration.modelsURL() else {
+            throw SafetyGuardianError.invalidConfiguration
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+
+        let (_, response) = try await session.data(for: request)
+
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw SafetyGuardianError.networkError(NSError(domain: "Invalid response", code: -1))
+        }
+
+        guard (200...299).contains(httpResponse.statusCode) else {
+            throw SafetyGuardianError.apiError("HTTP \(httpResponse.statusCode)")
+        }
     }
 }

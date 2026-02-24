@@ -22,7 +22,8 @@ struct AppConfiguration {
     }()
 
     // vLLM Server - Nebius L40S GPU instance
-    static var vllmServerURL: String = config["VLLM_SERVER_URL"] as? String ?? "http://localhost:8000/v1"
+    private static let defaultVLLMServerURL: String = config["VLLM_SERVER_URL"] as? String ?? "http://localhost:8000/v1"
+    static var vllmServerURL: String = defaultVLLMServerURL
 
     // ElevenLabs TTS API
     static let elevenlabsAPIKey: String = config["ELEVENLABS_API_KEY"] as? String ?? ""
@@ -31,7 +32,13 @@ struct AppConfiguration {
     // MARK: - Processing Settings
 
     // How often to process frames (in seconds)
-    static var processingInterval: TimeInterval = 20.0
+    static let defaultProcessingInterval: TimeInterval = 20.0
+    static var processingInterval: TimeInterval = defaultProcessingInterval
+
+    // Video sampling for best frame selection (in seconds)
+    static let defaultVideoSampleDuration: TimeInterval = 1.5
+    static var videoSampleDuration: TimeInterval = defaultVideoSampleDuration
+    static let videoSampleCount: Int = 6
 
     // Cosmos-Reason2 model parameters
     static let maxTokens: Int = 30
@@ -45,7 +52,8 @@ struct AppConfiguration {
 
     // MARK: - Audio Settings
 
-    static var audioVolume: Float = 0.8  // 0.0 to 1.0
+    static let defaultAudioVolume: Float = 0.8  // 0.0 to 1.0
+    static var audioVolume: Float = defaultAudioVolume
     static let voiceID: String = config["VOICE_ID"] as? String ?? "21m00Tcm4TlvDq8ikWAM"  // Rachel voice
     static let ttsModel: String = "eleven_turbo_v2_5"
 
@@ -77,12 +85,43 @@ struct AppConfiguration {
         return URL(string: "\(vllmServerURL)/chat/completions")
     }
 
+    static func modelsURL() -> URL? {
+        return URL(string: "\(vllmServerURL)/models")
+    }
+
+    static var defaultVLLMServerURLValue: String {
+        return defaultVLLMServerURL
+    }
+
     static func ttsURL(voiceID: String) -> URL? {
         return URL(string: "\(elevenlabsBaseURL)/text-to-speech/\(voiceID)")
     }
 
     static func retryDelay(attempt: Int) -> TimeInterval {
         return retryDelayBase * pow(2.0, Double(attempt))
+    }
+
+    // MARK: - URL Validation / Normalization
+
+    static func normalizeVLLMServerURL(_ input: String) -> String? {
+        let trimmed = input.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return nil }
+
+        let normalized = trimmed.hasSuffix("/") ? String(trimmed.dropLast()) : trimmed
+        guard var components = URLComponents(string: normalized) else { return nil }
+        guard let scheme = components.scheme?.lowercased(), scheme == "http" || scheme == "https" else { return nil }
+        guard let host = components.host, !host.isEmpty else { return nil }
+
+        let path = components.path
+        if path.isEmpty {
+            components.path = "/v1"
+        } else if path.contains("/v1") {
+            components.path = "/v1"
+        } else {
+            components.path = path + (path.hasSuffix("/") ? "v1" : "/v1")
+        }
+
+        return components.url?.absoluteString
     }
 }
 
@@ -95,6 +134,7 @@ extension AppConfiguration {
         static let processingInterval = "processingInterval"
         static let audioVolume = "audioVolume"
         static let vllmServerURL = "vllmServerURL"
+        static let videoSampleDuration = "videoSampleDuration"
     }
 
     static func loadSettings() {
@@ -104,14 +144,39 @@ extension AppConfiguration {
         if defaults.object(forKey: Keys.audioVolume) != nil {
             audioVolume = defaults.float(forKey: Keys.audioVolume)
         }
+        if defaults.object(forKey: Keys.videoSampleDuration) != nil {
+            videoSampleDuration = defaults.double(forKey: Keys.videoSampleDuration)
+        }
         if let serverURL = defaults.string(forKey: Keys.vllmServerURL), !serverURL.isEmpty {
             vllmServerURL = serverURL
+        } else {
+            vllmServerURL = defaultVLLMServerURL
         }
     }
 
     static func saveSettings() {
         defaults.set(processingInterval, forKey: Keys.processingInterval)
         defaults.set(audioVolume, forKey: Keys.audioVolume)
+        defaults.set(videoSampleDuration, forKey: Keys.videoSampleDuration)
         defaults.set(vllmServerURL, forKey: Keys.vllmServerURL)
+    }
+
+    static func resetSettingsToDefaults() {
+        defaults.removeObject(forKey: Keys.processingInterval)
+        defaults.removeObject(forKey: Keys.audioVolume)
+        defaults.removeObject(forKey: Keys.vllmServerURL)
+        defaults.removeObject(forKey: Keys.videoSampleDuration)
+
+        processingInterval = defaultProcessingInterval
+        audioVolume = defaultAudioVolume
+        videoSampleDuration = defaultVideoSampleDuration
+        vllmServerURL = defaultVLLMServerURL
+    }
+
+    static func hasSavedVLLMServerURL() -> Bool {
+        if let serverURL = defaults.string(forKey: Keys.vllmServerURL) {
+            return !serverURL.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+        }
+        return false
     }
 }

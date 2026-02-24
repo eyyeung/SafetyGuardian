@@ -181,6 +181,33 @@ class CameraManager: NSObject, ObservableObject {
         return jpegData.base64EncodedString()
     }
 
+    func encodeBestFrameBase64(duration: TimeInterval, samples: Int) async -> String? {
+        let sampleCount = max(samples, 1)
+        let interval = duration / Double(sampleCount)
+        var bestData: Data?
+
+        for _ in 0..<sampleCount {
+            if Task.isCancelled {
+                return nil
+            }
+
+            if let frame = getCurrentFrame(),
+               let jpegData = frame.jpegData(compressionQuality: AppConfiguration.jpegQuality) {
+                if bestData == nil || jpegData.count > bestData!.count {
+                    bestData = jpegData
+                }
+            }
+
+            do {
+                try await Task.sleep(nanoseconds: UInt64(interval * 1_000_000_000))
+            } catch {
+                return nil
+            }
+        }
+
+        return bestData?.base64EncodedString()
+    }
+
     // MARK: - AVCaptureVideoDataOutputSampleBufferDelegate
 
     func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {

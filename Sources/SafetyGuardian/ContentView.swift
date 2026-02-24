@@ -7,6 +7,52 @@
 
 import SwiftUI
 
+private enum ServerHealthStatus: Equatable {
+    case unknown
+    case checking
+    case healthy
+    case unhealthy(String)
+
+    var label: String {
+        switch self {
+        case .unknown:
+            return "Unknown"
+        case .checking:
+            return "Checking..."
+        case .healthy:
+            return "Online"
+        case .unhealthy:
+            return "Offline"
+        }
+    }
+
+    var systemImage: String {
+        switch self {
+        case .unknown:
+            return "questionmark.circle"
+        case .checking:
+            return "arrow.triangle.2.circlepath"
+        case .healthy:
+            return "checkmark.circle.fill"
+        case .unhealthy:
+            return "xmark.octagon.fill"
+        }
+    }
+
+    var color: Color {
+        switch self {
+        case .unknown:
+            return AppTheme.Colors.inactive
+        case .checking:
+            return AppTheme.Colors.accent
+        case .healthy:
+            return AppTheme.Colors.success
+        case .unhealthy:
+            return AppTheme.Colors.danger
+        }
+    }
+}
+
 struct ContentView: View {
     @StateObject private var cameraManager = CameraManager()
     @StateObject private var audioPlayer = AudioPlayer()
@@ -17,10 +63,12 @@ struct ContentView: View {
     @State private var timeUntilNextCheck: TimeInterval = 0
     @State private var warningHistory: [WarningHistory] = []
     @State private var showSettings = false
+    @State private var processingTask: Task<Void, Never>?
+    @State private var countdownTimer: Timer?
+    @State private var serverHealthStatus: ServerHealthStatus = .unknown
 
     private let cosmosAPI = CosmosAPI()
     private let ttsManager = TTSManager()
-    private var processingTimer: Timer?
 
     @State private var isPulsing = false
     @State private var warningOpacity: Double = 1.0
@@ -86,28 +134,50 @@ struct ContentView: View {
                     }
 
                     // Status & Countdown Card
-                    HStack(spacing: 20) {
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text("STATUS")
-                                .font(AppTheme.Typography.caption())
-                                .foregroundColor(.white.opacity(0.6))
-                            Text(isActive ? "Monitoring" : "Paused")
-                                .font(AppTheme.Typography.headline())
-                                .foregroundColor(isActive ? AppTheme.Colors.success : AppTheme.Colors.inactive)
-                        }
-                        
-                        Spacer()
-                        
-                        if isActive {
-                            VStack(alignment: .trailing, spacing: 4) {
-                                Text("NEXT CHECK")
+                    VStack(alignment: .leading, spacing: 10) {
+                        HStack(spacing: 20) {
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("STATUS")
                                     .font(AppTheme.Typography.caption())
                                     .foregroundColor(.white.opacity(0.6))
-                                Text("\(Int(timeUntilNextCheck))s")
+                                Text(isActive ? "Monitoring" : "Paused")
                                     .font(AppTheme.Typography.headline())
-                                    .foregroundColor(AppTheme.Colors.accent)
-                                    .monospacedDigit()
+                                    .foregroundColor(isActive ? AppTheme.Colors.success : AppTheme.Colors.inactive)
                             }
+                            
+                            Spacer()
+
+                            VStack(alignment: .trailing, spacing: 4) {
+                                Text("SERVER")
+                                    .font(AppTheme.Typography.caption())
+                                    .foregroundColor(.white.opacity(0.6))
+                                HStack(spacing: 6) {
+                                    Image(systemName: serverHealthStatus.systemImage)
+                                        .foregroundColor(serverHealthStatus.color)
+                                    Text(serverHealthStatus.label)
+                                        .font(AppTheme.Typography.headline())
+                                        .foregroundColor(serverHealthStatus.color)
+                                }
+                            }
+                            
+                            if isActive {
+                                VStack(alignment: .trailing, spacing: 4) {
+                                    Text("NEXT CHECK")
+                                        .font(AppTheme.Typography.caption())
+                                        .foregroundColor(.white.opacity(0.6))
+                                    Text("\(Int(timeUntilNextCheck))s")
+                                        .font(AppTheme.Typography.headline())
+                                        .foregroundColor(AppTheme.Colors.accent)
+                                        .monospacedDigit()
+                                }
+                            }
+                        }
+
+                        if case .unhealthy(let message) = serverHealthStatus {
+                            Text(message)
+                                .font(AppTheme.Typography.caption())
+                                .foregroundColor(.white.opacity(0.7))
+                                .lineLimit(2)
                         }
                     }
                     .glassStyle()
@@ -185,11 +255,14 @@ struct ContentView: View {
                 }
             }
             .sheet(isPresented: $showSettings) {
-                SettingsView()
+                SettingsView(onSave: {
+                    refreshServerHealth()
+                })
             }
             .onAppear {
-                setupCamera()
                 AppConfiguration.loadSettings()
+                setupCamera()
+                refreshServerHealth()
             }
             .preferredColorScheme(.dark)
         }
@@ -213,35 +286,65 @@ struct ContentView: View {
 
     private func startDetection() {
         cameraManager.startCapture()
-        scheduleProcessing()
+        refreshServerHealth()
+        startProcessingLoop()
     }
 
     private func stopDetection() {
+        processingTask?.cancel()
+        processingTask = nil
+        countdownTimer?.invalidate()
+        countdownTimer = nil
+        timeUntilNextCheck = 0
         cameraManager.stopCapture()
         audioPlayer.stopAudio()
+        processingState = .idle
     }
 
-    private func scheduleProcessing() {
-        guard isActive else { return }
-
+    private func refreshServerHealth() {
+        serverHealthStatus = .checking
         Task {
-            await processFrame()
-
-            // Schedule next processing
-            if isActive {
-                DispatchQueue.main.asyncAfter(deadline: .now() + AppConfiguration.processingInterval) {
-                    scheduleProcessing()
+            do {
+                try await cosmosAPI.checkHealth()
+                await MainActor.run {
+                    serverHealthStatus = .healthy
                 }
-
-                // Update countdown
-                timeUntilNextCheck = AppConfiguration.processingInterval
-                startCountdown()
+            } catch {
+                await MainActor.run {
+                    serverHealthStatus = .unhealthy(error.localizedDescription)
+                }
             }
         }
     }
 
+    private func startProcessingLoop() {
+        processingTask?.cancel()
+        processingTask = Task {
+            while !Task.isCancelled && isActive {
+                await processFrame()
+
+                if Task.isCancelled || !isActive {
+                    break
+                }
+
+                await MainActor.run {
+                    timeUntilNextCheck = AppConfiguration.processingInterval
+                    startCountdown()
+                }
+
+                do {
+                    try await Task.sleep(nanoseconds: UInt64(AppConfiguration.processingInterval * 1_000_000_000))
+                } catch {
+                    break
+                }
+            }
+        }
+    }
+
+    @MainActor
     private func startCountdown() {
-        Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { timer in
+        countdownTimer?.invalidate()
+        countdownTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { timer in
             if !isActive {
                 timer.invalidate()
                 return
@@ -261,22 +364,40 @@ struct ContentView: View {
 
         do {
             // Step 1: Capture frame
-            processingState = .capturing
-            guard let base64Image = cameraManager.encodeFrameBase64() else {
+            await MainActor.run {
+                processingState = .capturing
+            }
+            let base64Image = await cameraManager.encodeBestFrameBase64(
+                duration: AppConfiguration.videoSampleDuration,
+                samples: AppConfiguration.videoSampleCount
+            )
+            guard let base64Image = base64Image else {
                 throw SafetyGuardianError.cameraUnavailable
             }
 
+            try Task.checkCancellation()
+
             // Step 2: Analyze with Cosmos-Reason2
-            processingState = .analyzing
+            await MainActor.run {
+                processingState = .analyzing
+            }
             let warningText = try await cosmosAPI.analyzeFrame(base64Image)
 
+            try Task.checkCancellation()
+
             // Step 3: Convert to speech
-            processingState = .generatingSpeech
+            await MainActor.run {
+                processingState = .generatingSpeech
+            }
             let audioData = try await ttsManager.convertToSpeech(warningText)
 
+            try Task.checkCancellation()
+
             // Step 4: Play audio
-            processingState = .playingAudio
+            let stillActive = await MainActor.run { isActive }
+            guard stillActive else { return }
             await MainActor.run {
+                processingState = .playingAudio
                 latestWarning = warningText
                 audioPlayer.playAudio(audioData)
             }
@@ -292,6 +413,12 @@ struct ContentView: View {
             print("Full pipeline completed in \(processingTime)s: \(warningText)")
 
         } catch {
+            if error is CancellationError {
+                await MainActor.run {
+                    processingState = .idle
+                }
+                return
+            }
             await MainActor.run {
                 processingState = .error(error.localizedDescription)
                 print("Processing error: \(error.localizedDescription)")
@@ -335,6 +462,11 @@ struct SettingsView: View {
     @State private var processingInterval: Double = AppConfiguration.processingInterval
     @State private var audioVolume: Float = AppConfiguration.audioVolume
     @State private var serverURL: String = AppConfiguration.vllmServerURL
+    @State private var videoSampleDuration: Double = AppConfiguration.videoSampleDuration
+    @State private var serverURLError: String?
+    @State private var hasSavedServerURL: Bool = AppConfiguration.hasSavedVLLMServerURL()
+
+    let onSave: (() -> Void)?
 
     var body: some View {
         NavigationView {
@@ -356,6 +488,29 @@ struct SettingsView: View {
                                 .foregroundColor(.secondary)
                             Spacer()
                             Text("60s")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                    }
+                }
+
+                Section(header: Text("Video Sampling")) {
+                    VStack(alignment: .leading) {
+                        Text("Duration: \(String(format: "%.1f", videoSampleDuration))s")
+                            .font(.headline)
+
+                        Slider(value: $videoSampleDuration, in: 0.5...3.0, step: 0.5)
+
+                        HStack {
+                            Text("0.5s")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                            Spacer()
+                            Text("1.5s")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                            Spacer()
+                            Text("3s")
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                         }
@@ -387,15 +542,40 @@ struct SettingsView: View {
                         .keyboardType(.URL)
                         .font(.footnote)
 
-                    Text("Example: http://YOUR_IP:8000/v1")
+                    if let error = serverURLError {
+                        Text(error)
+                            .font(.caption)
+                            .foregroundColor(AppTheme.Colors.danger)
+                    } else {
+                        Text("Example: http://YOUR_IP:8000/v1")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+
+                    Text(hasSavedServerURL ? "Using saved override" : "Using Config.plist default")
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
 
                 Section {
                     Button("Save Settings") {
-                        saveSettings()
-                        dismiss()
+                        if saveSettings() {
+                            dismiss()
+                        }
+                    }
+                    .frame(maxWidth: .infinity)
+                }
+
+                Section {
+                    Button("Reset to Config Defaults") {
+                        AppConfiguration.resetSettingsToDefaults()
+                        processingInterval = AppConfiguration.processingInterval
+                        audioVolume = AppConfiguration.audioVolume
+                        videoSampleDuration = AppConfiguration.videoSampleDuration
+                        serverURL = AppConfiguration.vllmServerURL
+                        serverURLError = nil
+                        hasSavedServerURL = false
+                        onSave?()
                     }
                     .frame(maxWidth: .infinity)
                 }
@@ -412,11 +592,24 @@ struct SettingsView: View {
         }
     }
 
-    private func saveSettings() {
+    @discardableResult
+    private func saveSettings() -> Bool {
+        if let normalized = AppConfiguration.normalizeVLLMServerURL(serverURL) {
+            serverURL = normalized
+            serverURLError = nil
+        } else {
+            serverURLError = "Enter a valid URL (e.g., http://HOST:8000/v1)"
+            return false
+        }
+
         AppConfiguration.processingInterval = processingInterval
         AppConfiguration.audioVolume = audioVolume
+        AppConfiguration.videoSampleDuration = videoSampleDuration
         AppConfiguration.vllmServerURL = serverURL
         AppConfiguration.saveSettings()
+        hasSavedServerURL = true
+        onSave?()
+        return true
     }
 }
 
