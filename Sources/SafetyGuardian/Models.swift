@@ -14,12 +14,22 @@ struct CosmosRequest: Codable {
     let messages: [Message]
     let maxTokens: Int
     let temperature: Float
+    let extraBody: ExtraBody?
 
     enum CodingKeys: String, CodingKey {
         case model
         case messages
         case maxTokens = "max_tokens"
         case temperature
+        case extraBody = "extra_body"
+    }
+
+    struct ExtraBody: Codable {
+        let loraName: String
+
+        enum CodingKeys: String, CodingKey {
+            case loraName = "lora_name"
+        }
     }
 
     struct Message: Codable {

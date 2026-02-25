@@ -113,7 +113,8 @@ class CosmosAPI {
                 )
             ],
             maxTokens: AppConfiguration.maxTokens,
-            temperature: AppConfiguration.temperature
+            temperature: AppConfiguration.temperature,
+            extraBody: CosmosRequest.ExtraBody(loraName: "cosmos-safety")
         )
 
         request.httpBody = try? JSONEncoder().encode(cosmosRequest)
