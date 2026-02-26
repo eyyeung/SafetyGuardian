@@ -1,5 +1,7 @@
 # SafetyGuardian
 
+<img src="logo.png" alt="SafetyGuardian logo" width="100" height="100" />
+
 AI-powered hazard detection iOS app for elderly safety using camera vision and audio warnings.
 
 **Platform:** iOS 16.0+
