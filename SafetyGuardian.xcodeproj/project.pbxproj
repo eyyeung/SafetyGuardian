@@ -16,6 +16,7 @@
 		1A000007000000000000001 /* TTSManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A000007000000000000001 /* TTSManager.swift */; };
 		1A000008000000000000001 /* AudioPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A000008000000000000001 /* AudioPlayer.swift */; };
 		1A000009000000000000001 /* Config.plist in Resources */ = {isa = PBXBuildFile; fileRef = 2A000009000000000000001 /* Config.plist */; };
+		1A000010000000000000001 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2A000011000000000000001 /* Assets.xcassets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -29,6 +30,7 @@
 		2A000008000000000000001 /* AudioPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPlayer.swift; sourceTree = "<group>"; };
 		2A000009000000000000001 /* Config.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Config.plist; sourceTree = "<group>"; };
 		2A000010000000000000001 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		2A000011000000000000001 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		3A000001000000000000001 /* SafetyGuardian.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SafetyGuardian.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -50,6 +52,7 @@
 				5A000003000000000000001 /* Products */,
 				2A000009000000000000001 /* Config.plist */,
 				2A000010000000000000001 /* Info.plist */,
+				2A000011000000000000001 /* Assets.xcassets */,
 			);
 			sourceTree = "<group>";
 		};
@@ -143,6 +146,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				1A000009000000000000001 /* Config.plist in Resources */,
+				1A000010000000000000001 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

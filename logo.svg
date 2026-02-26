@@ -6,8 +6,8 @@
       <stop offset="100%" style="stop-color:#357ABD;stop-opacity:1" />
     </linearGradient>
     <linearGradient id="shieldGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" style="stop-color:#5CB85C;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#449D44;stop-opacity:1" />
+      <stop offset="0%" style="stop-color:#B8BDC4;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#8F96A0;stop-opacity:1" />
     </linearGradient>
   </defs>
 
@@ -26,17 +26,14 @@
   <circle cx="512" cy="450" r="40" fill="#2C3E50"/>
   <circle cx="530" cy="430" r="15" fill="#FFFFFF" opacity="0.8"/>
 
-  <!-- Walking path/route indicator -->
-  <path d="M 380 580 Q 450 600 512 580 Q 574 600 644 580"
-        stroke="#FFFFFF"
-        stroke-width="12"
-        fill="none"
-        stroke-linecap="round"
-        opacity="0.7"/>
+  <!-- Mustache smile -->
+  <path d="M 360 585
+           C 415 530 495 530 512 585
+           C 529 530 609 530 664 585
+           C 639 655 559 655 512 615
+           C 465 655 385 655 360 585 Z"
+        fill="#2C3E50"
+        opacity="0.9"/>
 
-  <!-- Small guardian stars/sparkles -->
-  <circle cx="350" cy="320" r="8" fill="#FFFFFF" opacity="0.8"/>
-  <circle cx="674" cy="320" r="8" fill="#FFFFFF" opacity="0.8"/>
-  <circle cx="420" cy="680" r="6" fill="#FFFFFF" opacity="0.6"/>
-  <circle cx="604" cy="680" r="6" fill="#FFFFFF" opacity="0.6"/>
+  <!-- Small guardian stars/sparkles removed -->
 </svg>
