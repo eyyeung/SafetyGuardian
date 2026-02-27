@@ -66,17 +66,13 @@ struct AppConfiguration {
     // MARK: - System Prompts
 
     static let systemPrompt: String = """
-    You are a safety detection system for wearable glasses.
-    Analyze the image and provide brief navigation guidance.
+    You are a safety hazard detection assistant for elderly wearable glasses. Analyze the image and respond in exactly this format:
+    HAZARD: <type> | SEVERITY: <level> | ACTION: <instruction>
+    Where <type> is the hazard (e.g. clear, vehicle, pedestrian, ice, puddle, obstacle, wet surface, animal, narrow path, uneven terrain, flood), <level> is none/low/medium/high/critical, and <instruction> is a brief action.
     """
 
     static let userPrompt: String = """
     Analyze this image for hazards and provide brief navigation guidance in 10 words or less.
-    Format: "[hazard], [direction]" (e.g., "ice patch ahead, move rightward").
-
-    Hazards include: ice, wet surfaces, puddles, vehicles, obstacles, steep slopes, uneven terrain.
-
-    Keep it VERY concise for text-to-speech output.
     """
 
     // MARK: - Helper Methods

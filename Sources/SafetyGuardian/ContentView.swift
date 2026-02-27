@@ -60,6 +60,7 @@ struct ContentView: View {
 
     @State private var processingState: ProcessingState = .idle
     @State private var latestWarning: String = "No warnings yet"
+    @State private var latestHazard: HazardDetection?
     @State private var isActive = false
     @State private var timeUntilNextCheck: TimeInterval = 0
     @State private var warningHistory: [WarningHistory] = []
@@ -251,21 +252,83 @@ struct ContentView: View {
             HStack {
                 Image(systemName: "exclamationmark.triangle.fill")
                     .foregroundColor(AppTheme.Colors.warning)
-                Text("LATEST AI INSIGHT")
+                Text("HAZARD DETECTION")
                     .font(AppTheme.Typography.caption())
                     .foregroundColor(.white.opacity(0.6))
             }
 
-            Text(latestWarning)
-                .font(AppTheme.Typography.body())
-                .foregroundColor(.white)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .fixedSize(horizontal: false, vertical: true)
+            if let hazard = latestHazard {
+                VStack(spacing: 12) {
+                    // Hazard Type Row
+                    HStack {
+                        Text("HAZARD")
+                            .font(.system(size: 11, weight: .semibold, design: .monospaced))
+                            .foregroundColor(.white.opacity(0.5))
+                        Spacer()
+                        Text(hazard.hazardType)
+                            .font(.system(size: 15, weight: .bold, design: .rounded))
+                            .foregroundColor(.white)
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 6)
+                            .background(Color.white.opacity(0.15))
+                            .cornerRadius(8)
+                    }
+                    
+                    // Severity Row
+                    HStack {
+                        Text("SEVERITY")
+                            .font(.system(size: 11, weight: .semibold, design: .monospaced))
+                            .foregroundColor(.white.opacity(0.5))
+                        Spacer()
+                        HStack(spacing: 6) {
+                            Circle()
+                                .fill(Color(red: hazard.severity.color.red, 
+                                          green: hazard.severity.color.green, 
+                                          blue: hazard.severity.color.blue))
+                                .frame(width: 10, height: 10)
+                            Text(hazard.severity.displayName)
+                                .font(.system(size: 15, weight: .bold, design: .rounded))
+                                .foregroundColor(Color(red: hazard.severity.color.red, 
+                                                      green: hazard.severity.color.green, 
+                                                      blue: hazard.severity.color.blue))
+                        }
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 6)
+                        .background(Color(red: hazard.severity.color.red, 
+                                        green: hazard.severity.color.green, 
+                                        blue: hazard.severity.color.blue).opacity(0.2))
+                        .cornerRadius(8)
+                    }
+                    
+                    // Action Row
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text("ACTION")
+                            .font(.system(size: 11, weight: .semibold, design: .monospaced))
+                            .foregroundColor(.white.opacity(0.5))
+                        Text(hazard.action)
+                            .font(.system(size: 16, weight: .medium, design: .default))
+                            .foregroundColor(.white)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                }
                 .opacity(warningOpacity)
+            } else {
+                Text(latestWarning)
+                    .font(AppTheme.Typography.body())
+                    .foregroundColor(.white)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .opacity(warningOpacity)
+            }
         }
         .glassStyle()
         .padding(.horizontal)
-        .onChange(of: latestWarning) { _ in
+        .onChange(of: latestWarning) { newValue in
+            // Parse the new warning into structured format
+            latestHazard = HazardDetection.parse(newValue)
+            
+            // Animate the update
             withAnimation(.easeInOut(duration: 0.3)) {
                 warningOpacity = 0.3
             }
@@ -342,16 +405,42 @@ struct ContentView: View {
     }
 
     private func overlayLatestInsight() -> some View {
-        Text(latestWarning)
-            .font(AppTheme.Typography.caption())
-            .foregroundColor(.white)
-            .lineLimit(2)
-            .padding(.horizontal, 12)
-            .padding(.vertical, 8)
-            .background(.ultraThinMaterial)
-            .cornerRadius(12)
-            .padding(.horizontal, 16)
-            .padding(.top, 12)
+        VStack(alignment: .leading, spacing: 6) {
+            if let hazard = latestHazard {
+                HStack(spacing: 8) {
+                    Circle()
+                        .fill(Color(red: hazard.severity.color.red, 
+                                  green: hazard.severity.color.green, 
+                                  blue: hazard.severity.color.blue))
+                        .frame(width: 8, height: 8)
+                    Text(hazard.hazardType.uppercased())
+                        .font(.system(size: 10, weight: .bold, design: .monospaced))
+                        .foregroundColor(.white)
+                    Text("•")
+                        .foregroundColor(.white.opacity(0.5))
+                    Text(hazard.severity.displayName)
+                        .font(.system(size: 10, weight: .semibold, design: .monospaced))
+                        .foregroundColor(Color(red: hazard.severity.color.red, 
+                                              green: hazard.severity.color.green, 
+                                              blue: hazard.severity.color.blue))
+                }
+                Text(hazard.action)
+                    .font(.system(size: 11, weight: .medium))
+                    .foregroundColor(.white)
+                    .lineLimit(2)
+            } else {
+                Text(latestWarning)
+                    .font(AppTheme.Typography.caption())
+                    .foregroundColor(.white)
+                    .lineLimit(2)
+            }
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 8)
+        .background(.ultraThinMaterial)
+        .cornerRadius(12)
+        .padding(.horizontal, 16)
+        .padding(.top, 12)
     }
 
     // MARK: - Actions
@@ -413,13 +502,18 @@ struct ContentView: View {
                     break
                 }
 
+                // Get the current interval value (in case it changed during processing)
+                let currentInterval = await MainActor.run { 
+                    return AppConfiguration.processingInterval 
+                }
+                
                 await MainActor.run {
-                    timeUntilNextCheck = AppConfiguration.processingInterval
+                    timeUntilNextCheck = currentInterval
                     startCountdown()
                 }
 
                 do {
-                    try await Task.sleep(nanoseconds: UInt64(AppConfiguration.processingInterval * 1_000_000_000))
+                    try await Task.sleep(nanoseconds: UInt64(currentInterval * 1_000_000_000))
                 } catch {
                     break
                 }
@@ -475,7 +569,11 @@ struct ContentView: View {
             await MainActor.run {
                 processingState = .generatingSpeech
             }
-            let audioData = try await ttsManager.convertToSpeech(warningText)
+            
+            // Parse structured output and convert to natural speech
+            let hazardDetection = HazardDetection.parse(warningText)
+            let speechText = hazardDetection.toSpeechText()
+            let audioData = try await ttsManager.convertToSpeech(speechText)
 
             try Task.checkCancellation()
 
@@ -551,6 +649,7 @@ struct SettingsView: View {
     @State private var videoSampleDuration: Double = AppConfiguration.videoSampleDuration
     @State private var serverURLError: String?
     @State private var hasSavedServerURL: Bool = AppConfiguration.hasSavedVLLMServerURL()
+    @State private var showAutoSaveIndicator: Bool = false
 
     let onSave: (() -> Void)?
 
@@ -558,24 +657,73 @@ struct SettingsView: View {
         NavigationView {
             Form {
                 Section(header: Text("Processing")) {
-                    VStack(alignment: .leading) {
-                        Text("Interval: \(Int(processingInterval))s")
-                            .font(.headline)
+                    VStack(alignment: .leading, spacing: 12) {
+                        HStack {
+                            Text("Check Interval: \(Int(processingInterval))s")
+                                .font(.headline)
+                            
+                            Spacer()
+                            
+                            if showAutoSaveIndicator {
+                                HStack(spacing: 4) {
+                                    Image(systemName: "checkmark.circle.fill")
+                                        .foregroundColor(AppTheme.Colors.success)
+                                    Text("Saved")
+                                        .font(.caption)
+                                        .foregroundColor(AppTheme.Colors.success)
+                                }
+                                .transition(.opacity)
+                            }
+                        }
+                        
+                        Text("How often to analyze the camera feed for hazards")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
 
-                        Slider(value: $processingInterval, in: 5...60, step: 5)
+                        // Quick select buttons
+                        HStack(spacing: 12) {
+                            IntervalButton(interval: 5, currentInterval: $processingInterval)
+                            IntervalButton(interval: 10, currentInterval: $processingInterval)
+                            IntervalButton(interval: 15, currentInterval: $processingInterval)
+                            IntervalButton(interval: 20, currentInterval: $processingInterval)
+                        }
+                        
+                        // Fine-tune slider
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("Custom")
+                                .font(.caption2)
+                                .foregroundColor(.secondary)
+                            Slider(value: $processingInterval, in: 5...60, step: 1)
+                        }
 
                         HStack {
                             Text("5s")
-                                .font(.caption)
+                                .font(.caption2)
                                 .foregroundColor(.secondary)
                             Spacer()
                             Text("30s")
-                                .font(.caption)
+                                .font(.caption2)
                                 .foregroundColor(.secondary)
                             Spacer()
                             Text("60s")
-                                .font(.caption)
+                                .font(.caption2)
                                 .foregroundColor(.secondary)
+                        }
+                    }
+                    .onChange(of: processingInterval) { newValue in
+                        // Auto-save interval changes immediately
+                        AppConfiguration.processingInterval = newValue
+                        AppConfiguration.saveSettings()
+                        
+                        // Show saved indicator briefly
+                        withAnimation {
+                            showAutoSaveIndicator = true
+                        }
+                        
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                            withAnimation {
+                                showAutoSaveIndicator = false
+                            }
                         }
                     }
                 }
@@ -702,6 +850,40 @@ struct SettingsView: View {
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView()
+    }
+}
+
+// MARK: - Interval Button Component
+
+struct IntervalButton: View {
+    let interval: Int
+    @Binding var currentInterval: Double
+    
+    private var isSelected: Bool {
+        Int(currentInterval) == interval
+    }
+    
+    var body: some View {
+        Button(action: {
+            withAnimation(.easeInOut(duration: 0.2)) {
+                currentInterval = Double(interval)
+            }
+        }) {
+            Text("\(interval)s")
+                .font(.system(size: 15, weight: isSelected ? .bold : .medium, design: .rounded))
+                .foregroundColor(isSelected ? .white : AppTheme.Colors.accent)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 12)
+                .background(
+                    RoundedRectangle(cornerRadius: 12)
+                        .fill(isSelected ? AppTheme.Colors.accent : Color.clear)
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(AppTheme.Colors.accent, lineWidth: isSelected ? 0 : 2)
+                )
+        }
+        .buttonStyle(.plain)
     }
 }
 
