@@ -86,6 +86,10 @@ class CosmosAPI {
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        let apiKey = AppConfiguration.vllmAPIKey
+        if !apiKey.isEmpty {
+            request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
+        }
 
         let cosmosRequest = CosmosRequest(
             model: AppConfiguration.modelName,
@@ -131,6 +135,10 @@ class CosmosAPI {
 
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
+        let apiKey = AppConfiguration.vllmAPIKey
+        if !apiKey.isEmpty {
+            request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
+        }
 
         let (_, response) = try await session.data(for: request)
 

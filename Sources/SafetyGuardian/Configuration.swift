@@ -24,6 +24,7 @@ struct AppConfiguration {
     // vLLM Server - Nebius L40S GPU instance
     private static let defaultVLLMServerURL: String = config["VLLM_SERVER_URL"] as? String ?? "http://localhost:8000/v1"
     static var vllmServerURL: String = defaultVLLMServerURL
+    static let vllmAPIKey: String = config["VLLM_API_KEY"] as? String ?? ""
 
     // ElevenLabs TTS API
     static let elevenlabsAPIKey: String = config["ELEVENLABS_API_KEY"] as? String ?? ""

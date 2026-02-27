@@ -1,5 +1,6 @@
 # Secrets and Configuration (NEVER COMMIT)
 Config.plist
+serve_finetuned_model.sh
 *.env
 .env
 .env.local
