@@ -9,6 +9,7 @@ import Foundation
 import AVFoundation
 import UIKit
 import Combine
+import ImageIO
 
 class CameraManager: NSObject, ObservableObject {
     @Published var isCapturing = false
@@ -19,12 +20,34 @@ class CameraManager: NSObject, ObservableObject {
     private var videoOutput: AVCaptureVideoDataOutput?
     private let sessionQueue = DispatchQueue(label: "camera.session.queue")
     private var latestSampleBuffer: CMSampleBuffer?
+    private var currentVideoOrientation: AVCaptureVideoOrientation = .portrait
+    private var needsLandscapeFlip: Bool = false
 
     // MARK: - Camera Setup
 
     func setupCamera() {
-        sessionQueue.async { [weak self] in
-            self?.configureCaptureSession()
+        let authorization = AVCaptureDevice.authorizationStatus(for: .video)
+        switch authorization {
+        case .authorized:
+            sessionQueue.async { [weak self] in
+                self?.configureCaptureSession()
+            }
+        case .notDetermined:
+            AVCaptureDevice.requestAccess(for: .video) { [weak self] granted in
+                if granted {
+                    self?.sessionQueue.async {
+                        self?.configureCaptureSession()
+                    }
+                } else {
+                    DispatchQueue.main.async {
+                        self?.errorMessage = "Camera access was denied"
+                    }
+                }
+            }
+        default:
+            DispatchQueue.main.async {
+                self.errorMessage = "Camera access is not authorized"
+            }
         }
     }
 
@@ -62,6 +85,7 @@ class CameraManager: NSObject, ObservableObject {
             if session.canAddOutput(output) {
                 session.addOutput(output)
                 self.videoOutput = output
+                self.applyVideoOrientation()
             } else {
                 DispatchQueue.main.async {
                     self.errorMessage = "Cannot add video output"
@@ -70,6 +94,7 @@ class CameraManager: NSObject, ObservableObject {
             }
 
             self.captureSession = session
+            self.updateOrientation(UIDevice.current.orientation)
             DispatchQueue.main.async {
                 self.errorMessage = nil
             }
@@ -128,6 +153,7 @@ class CameraManager: NSObject, ObservableObject {
 
     func startCapture() {
         sessionQueue.async { [weak self] in
+            self?.applyVideoOrientation()
             self?.captureSession?.startRunning()
             DispatchQueue.main.async {
                 self?.isCapturing = true
@@ -155,15 +181,17 @@ class CameraManager: NSObject, ObservableObject {
             return nil
         }
 
-        let ciImage = CIImage(cvPixelBuffer: pixelBuffer)
+        var ciImage = CIImage(cvPixelBuffer: pixelBuffer)
+        if needsLandscapeFlip {
+            ciImage = ciImage.oriented(.down) // 180° correction for landscape
+        }
         let context = CIContext()
 
         guard let cgImage = context.createCGImage(ciImage, from: ciImage.extent) else {
             return nil
         }
 
-        // Fix orientation - camera outputs in landscape, we want portrait
-        return UIImage(cgImage: cgImage, scale: 1.0, orientation: .right)
+        return UIImage(cgImage: cgImage)
     }
 
     // MARK: - Frame Encoding
@@ -228,15 +256,90 @@ class CameraManager: NSObject, ObservableObject {
             return nil
         }
 
-        let ciImage = CIImage(cvPixelBuffer: pixelBuffer)
+        var ciImage = CIImage(cvPixelBuffer: pixelBuffer)
+        if needsLandscapeFlip {
+            ciImage = ciImage.oriented(.down) // 180° correction for landscape
+        }
         let context = CIContext()
 
         guard let cgImage = context.createCGImage(ciImage, from: ciImage.extent) else {
             return nil
         }
 
-        // Fix orientation - camera outputs in landscape, we want portrait
-        return UIImage(cgImage: cgImage, scale: 1.0, orientation: .right)
+        return UIImage(cgImage: cgImage)
+    }
+}
+
+// MARK: - Orientation Handling
+
+extension CameraManager {
+    func updateOrientation(_ deviceOrientation: UIDeviceOrientation) {
+        guard let videoOrientation = videoOrientation(for: deviceOrientation) else {
+            return
+        }
+
+        currentVideoOrientation = videoOrientation
+        needsLandscapeFlip = videoOrientation == .landscapeLeft || videoOrientation == .landscapeRight
+
+        sessionQueue.async { [weak self] in
+            self?.applyVideoOrientation()
+        }
+    }
+
+    private func applyVideoOrientation() {
+        guard let connection = videoOutput?.connection(with: .video) else {
+            return
+        }
+
+        if connection.isVideoOrientationSupported {
+            connection.videoOrientation = currentVideoOrientation
+        }
+    }
+
+    private func videoOrientation(for deviceOrientation: UIDeviceOrientation) -> AVCaptureVideoOrientation? {
+        switch deviceOrientation {
+        case .portrait:
+            return .portrait
+        case .portraitUpsideDown:
+            return .portraitUpsideDown
+        case .landscapeLeft:
+            return .landscapeRight
+        case .landscapeRight:
+            return .landscapeLeft
+        default:
+            return nil
+        }
+    }
+
+}
+
+extension CameraManager {
+    func updateOrientation(_ interfaceOrientation: UIInterfaceOrientation) {
+        guard let videoOrientation = videoOrientation(for: interfaceOrientation) else {
+            return
+        }
+
+        currentVideoOrientation = videoOrientation
+        needsLandscapeFlip = videoOrientation == .landscapeLeft || videoOrientation == .landscapeRight
+
+        sessionQueue.async { [weak self] in
+            self?.applyVideoOrientation()
+        }
+    }
+
+    private func videoOrientation(for interfaceOrientation: UIInterfaceOrientation) -> AVCaptureVideoOrientation? {
+        switch interfaceOrientation {
+        case .portrait:
+            return .portrait
+        case .portraitUpsideDown:
+            return .portraitUpsideDown
+        case .landscapeLeft:
+            return .landscapeRight
+        case .landscapeRight:
+            return .landscapeLeft
+        default:
+            return nil
+        }
     }
 }
 

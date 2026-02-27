@@ -56,6 +56,7 @@ private enum ServerHealthStatus: Equatable {
 struct ContentView: View {
     @StateObject private var cameraManager = CameraManager()
     @StateObject private var audioPlayer = AudioPlayer()
+    @Environment(\.verticalSizeClass) private var verticalSizeClass
 
     @State private var processingState: ProcessingState = .idle
     @State private var latestWarning: String = "No warnings yet"
@@ -75,171 +76,22 @@ struct ContentView: View {
 
     var body: some View {
         NavigationView {
-            ZStack {
-                // Background Gradient
-                LinearGradient(
-                    gradient: AppTheme.Colors.backgroundGradient,
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
-                .ignoresSafeArea()
+            GeometryReader { proxy in
+                let isLandscape = proxy.size.width > proxy.size.height
+                let isCompact = verticalSizeClass == .compact || isLandscape
+                let previewHeight = min(isCompact ? 200 : 350, proxy.size.height * (isCompact ? 0.55 : 0.4))
 
-                VStack(spacing: 24) {
-                    // Camera Preview
-                    ZStack {
-                        CameraPreviewView(image: cameraManager.currentFrame)
-                            .frame(height: 350)
-                            .cornerRadius(AppTheme.Layout.cornerRadius)
-                            .shadow(color: isActive ? AppTheme.Colors.accent.opacity(0.3) : .clear, radius: 20)
-                        
-                        // Glassy readout for state
-                        VStack {
-                            Spacer()
-                            HStack {
-                                Text(processingState.description)
-                                    .font(AppTheme.Typography.caption())
-                                    .foregroundColor(.white.opacity(0.8))
-                                    .padding(.horizontal, 12)
-                                    .padding(.vertical, 6)
-                                    .background(.ultraThinMaterial)
-                                    .cornerRadius(12)
-                                Spacer()
-                                
-                                if isActive {
-                                    HStack(spacing: 4) {
-                                        Circle()
-                                            .fill(AppTheme.Colors.success)
-                                            .frame(width: 8, height: 8)
-                                            .scaleEffect(isPulsing ? 1.2 : 0.8)
-                                            .opacity(isPulsing ? 1.0 : 0.5)
-                                        
-                                        Text("LIVE")
-                                            .font(.system(size: 10, weight: .bold, design: .monospaced))
-                                            .foregroundColor(.white)
-                                    }
-                                    .padding(.horizontal, 10)
-                                    .padding(.vertical, 5)
-                                    .background(Color.red.opacity(0.8))
-                                    .cornerRadius(8)
-                                }
-                            }
-                            .padding(16)
-                        }
-                    }
-                    .padding(.horizontal)
-                    .onAppear {
-                        withAnimation(.easeInOut(duration: 1.0).repeatForever(autoreverses: true)) {
-                            isPulsing = true
-                        }
-                    }
+                ZStack {
+                    // Background Gradient
+                    LinearGradient(
+                        gradient: AppTheme.Colors.backgroundGradient,
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                    .ignoresSafeArea()
 
-                    // Status & Countdown Card
-                    VStack(alignment: .leading, spacing: 10) {
-                        HStack(spacing: 20) {
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text("STATUS")
-                                    .font(AppTheme.Typography.caption())
-                                    .foregroundColor(.white.opacity(0.6))
-                                Text(isActive ? "Monitoring" : "Paused")
-                                    .font(AppTheme.Typography.headline())
-                                    .foregroundColor(isActive ? AppTheme.Colors.success : AppTheme.Colors.inactive)
-                            }
-                            
-                            Spacer()
-
-                            VStack(alignment: .trailing, spacing: 4) {
-                                Text("SERVER")
-                                    .font(AppTheme.Typography.caption())
-                                    .foregroundColor(.white.opacity(0.6))
-                                HStack(spacing: 6) {
-                                    Image(systemName: serverHealthStatus.systemImage)
-                                        .foregroundColor(serverHealthStatus.color)
-                                    Text(serverHealthStatus.label)
-                                        .font(AppTheme.Typography.headline())
-                                        .foregroundColor(serverHealthStatus.color)
-                                }
-                            }
-                            
-                            if isActive {
-                                VStack(alignment: .trailing, spacing: 4) {
-                                    Text("NEXT CHECK")
-                                        .font(AppTheme.Typography.caption())
-                                        .foregroundColor(.white.opacity(0.6))
-                                    Text("\(Int(timeUntilNextCheck))s")
-                                        .font(AppTheme.Typography.headline())
-                                        .foregroundColor(AppTheme.Colors.accent)
-                                        .monospacedDigit()
-                                }
-                            }
-                        }
-
-                        if case .unhealthy(let message) = serverHealthStatus {
-                            Text(message)
-                                .font(AppTheme.Typography.caption())
-                                .foregroundColor(.white.opacity(0.7))
-                                .lineLimit(2)
-                        }
-                    }
-                    .glassStyle()
-                    .padding(.horizontal)
-
-                    // Latest Warning Card
-                    VStack(alignment: .leading, spacing: 12) {
-                        HStack {
-                            Image(systemName: "exclamationmark.triangle.fill")
-                                .foregroundColor(AppTheme.Colors.warning)
-                            Text("LATEST AI INSIGHT")
-                                .font(AppTheme.Typography.caption())
-                                .foregroundColor(.white.opacity(0.6))
-                        }
-
-                        Text(latestWarning)
-                            .font(AppTheme.Typography.body())
-                            .foregroundColor(.white)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .fixedSize(horizontal: false, vertical: true)
-                            .opacity(warningOpacity)
-                    }
-                    .glassStyle()
-                    .padding(.horizontal)
-                    .onChange(of: latestWarning) { _ in
-                        withAnimation(.easeInOut(duration: 0.3)) {
-                            warningOpacity = 0.3
-                        }
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                            withAnimation(.easeInOut(duration: 0.5)) {
-                                warningOpacity = 1.0
-                            }
-                        }
-                    }
-
-                    Spacer()
-
-                    // Control Button
-                    Button(action: toggleActive) {
-                        HStack(spacing: 12) {
-                            Image(systemName: isActive ? "pause.fill" : "play.fill")
-                                .font(.title3)
-                            Text(isActive ? "STOP MONITORING" : "START MONITORING")
-                                .font(AppTheme.Typography.headline())
-                                .tracking(1.2)
-                        }
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 18)
-                        .background(isActive ? AppTheme.Colors.danger : AppTheme.Colors.success)
-                        .foregroundColor(.white)
-                        .cornerRadius(AppTheme.Layout.cornerRadius)
-                        .shadow(color: (isActive ? AppTheme.Colors.danger : AppTheme.Colors.success).opacity(0.4), radius: 15, y: 5)
-                    }
-                    .padding(.horizontal)
-                    .padding(.bottom, 30)
-
-                    // Error Message
-                    if let errorMessage = cameraManager.errorMessage {
-                        Text(errorMessage)
-                            .font(AppTheme.Typography.caption())
-                            .foregroundColor(AppTheme.Colors.danger)
-                            .padding(.bottom, 10)
+                    Group {
+                        content(previewHeight: previewHeight, isCompact: isCompact, availableSize: proxy.size)
                     }
                 }
             }
@@ -262,10 +114,244 @@ struct ContentView: View {
             .onAppear {
                 AppConfiguration.loadSettings()
                 setupCamera()
+                UIDevice.current.beginGeneratingDeviceOrientationNotifications()
+                updateCameraOrientation()
                 refreshServerHealth()
+            }
+            .onDisappear {
+                UIDevice.current.endGeneratingDeviceOrientationNotifications()
+            }
+            .onReceive(NotificationCenter.default.publisher(for: UIDevice.orientationDidChangeNotification)) { _ in
+                updateCameraOrientation()
             }
             .preferredColorScheme(.dark)
         }
+    }
+
+    private func updateCameraOrientation() {
+        let interfaceOrientation: UIInterfaceOrientation? = UIApplication.shared
+            .connectedScenes
+            .compactMap { $0 as? UIWindowScene }
+            .first?
+            .interfaceOrientation
+
+        if let orientation = interfaceOrientation {
+            cameraManager.updateOrientation(orientation)
+        } else {
+            cameraManager.updateOrientation(UIDevice.current.orientation)
+        }
+    }
+
+    @ViewBuilder
+    private func content(previewHeight: CGFloat, isCompact: Bool, availableSize: CGSize) -> some View {
+        Group {
+            if isCompact {
+                ZStack {
+                    CameraPreviewView(image: cameraManager.currentFrame)
+                        .frame(width: availableSize.width, height: availableSize.height)
+                        .clipped()
+                        .ignoresSafeArea()
+
+                    VStack {
+                        overlayStatus()
+                        Spacer()
+                        overlayLatestInsight()
+                        controlBlock(isCompact: true)
+                            .padding(.bottom, 16)
+                    }
+                }
+            } else {
+                ScrollView(showsIndicators: false) {
+                    VStack(spacing: 24) {
+                        previewBlock(previewHeight: previewHeight)
+                        statusBlock()
+                        warningBlock()
+                        Spacer(minLength: 0)
+                        controlBlock(isCompact: false)
+                        errorBlock()
+                    }
+                    .padding(.top, 12)
+                }
+            }
+        }
+    }
+
+    private func previewBlock(previewHeight: CGFloat) -> some View {
+        ZStack {
+            CameraPreviewView(image: cameraManager.currentFrame)
+                .frame(height: previewHeight)
+                .cornerRadius(AppTheme.Layout.cornerRadius)
+                .shadow(color: isActive ? AppTheme.Colors.accent.opacity(0.3) : .clear, radius: 20)
+
+            VStack {
+                overlayStatus()
+                Spacer()
+            }
+        }
+        .onAppear {
+            withAnimation(.easeInOut(duration: 1.0).repeatForever(autoreverses: true)) {
+                isPulsing = true
+            }
+        }
+    }
+
+    private func statusBlock() -> some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack(spacing: 20) {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("STATUS")
+                        .font(AppTheme.Typography.caption())
+                        .foregroundColor(.white.opacity(0.6))
+                    Text(isActive ? "Monitoring" : "Paused")
+                        .font(AppTheme.Typography.headline())
+                        .foregroundColor(isActive ? AppTheme.Colors.success : AppTheme.Colors.inactive)
+                }
+
+                Spacer()
+
+                VStack(alignment: .trailing, spacing: 4) {
+                    Text("SERVER")
+                        .font(AppTheme.Typography.caption())
+                        .foregroundColor(.white.opacity(0.6))
+                    HStack(spacing: 6) {
+                        Image(systemName: serverHealthStatus.systemImage)
+                            .foregroundColor(serverHealthStatus.color)
+                        Text(serverHealthStatus.label)
+                            .font(AppTheme.Typography.headline())
+                            .foregroundColor(serverHealthStatus.color)
+                    }
+                }
+
+                if isActive {
+                    VStack(alignment: .trailing, spacing: 4) {
+                        Text("NEXT CHECK")
+                            .font(AppTheme.Typography.caption())
+                            .foregroundColor(.white.opacity(0.6))
+                        Text("\(Int(timeUntilNextCheck))s")
+                            .font(AppTheme.Typography.headline())
+                            .foregroundColor(AppTheme.Colors.accent)
+                            .monospacedDigit()
+                    }
+                }
+            }
+
+            if case .unhealthy(let message) = serverHealthStatus {
+                Text(message)
+                    .font(AppTheme.Typography.caption())
+                    .foregroundColor(.white.opacity(0.7))
+                    .lineLimit(2)
+            }
+        }
+        .glassStyle()
+        .padding(.horizontal)
+    }
+
+    private func warningBlock() -> some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Image(systemName: "exclamationmark.triangle.fill")
+                    .foregroundColor(AppTheme.Colors.warning)
+                Text("LATEST AI INSIGHT")
+                    .font(AppTheme.Typography.caption())
+                    .foregroundColor(.white.opacity(0.6))
+            }
+
+            Text(latestWarning)
+                .font(AppTheme.Typography.body())
+                .foregroundColor(.white)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .fixedSize(horizontal: false, vertical: true)
+                .opacity(warningOpacity)
+        }
+        .glassStyle()
+        .padding(.horizontal)
+        .onChange(of: latestWarning) { _ in
+            withAnimation(.easeInOut(duration: 0.3)) {
+                warningOpacity = 0.3
+            }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                withAnimation(.easeInOut(duration: 0.5)) {
+                    warningOpacity = 1.0
+                }
+            }
+        }
+    }
+
+    private func controlBlock(isCompact: Bool) -> some View {
+        Button(action: toggleActive) {
+            HStack(spacing: 12) {
+                Image(systemName: isActive ? "pause.fill" : "play.fill")
+                    .font(.title3)
+                Text(isActive ? "STOP MONITORING" : "START MONITORING")
+                    .font(AppTheme.Typography.headline())
+                    .tracking(1.2)
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, isCompact ? 12 : 18)
+            .background(isActive ? AppTheme.Colors.danger : AppTheme.Colors.success)
+            .foregroundColor(.white)
+            .cornerRadius(AppTheme.Layout.cornerRadius)
+            .shadow(color: (isActive ? AppTheme.Colors.danger : AppTheme.Colors.success).opacity(0.4), radius: 15, y: 5)
+        }
+        .padding(.horizontal)
+        .padding(.bottom, isCompact ? 12 : 30)
+    }
+
+    private func errorBlock() -> some View {
+        Group {
+            if let errorMessage = cameraManager.errorMessage {
+                Text(errorMessage)
+                    .font(AppTheme.Typography.caption())
+                    .foregroundColor(AppTheme.Colors.danger)
+                    .padding(.bottom, 10)
+            }
+        }
+    }
+
+    private func overlayStatus() -> some View {
+        HStack {
+            Text(processingState.description)
+                .font(AppTheme.Typography.caption())
+                .foregroundColor(.white.opacity(0.8))
+                .padding(.horizontal, 12)
+                .padding(.vertical, 6)
+                .background(.ultraThinMaterial)
+                .cornerRadius(12)
+            Spacer()
+
+            if isActive {
+                HStack(spacing: 4) {
+                    Circle()
+                        .fill(AppTheme.Colors.success)
+                        .frame(width: 8, height: 8)
+                        .scaleEffect(isPulsing ? 1.2 : 0.8)
+                        .opacity(isPulsing ? 1.0 : 0.5)
+
+                    Text("LIVE")
+                        .font(.system(size: 10, weight: .bold, design: .monospaced))
+                        .foregroundColor(.white)
+                }
+                .padding(.horizontal, 10)
+                .padding(.vertical, 5)
+                .background(Color.red.opacity(0.8))
+                .cornerRadius(8)
+            }
+        }
+        .padding(.horizontal, 16)
+        .padding(.top, 8)
+    }
+
+    private func overlayLatestInsight() -> some View {
+        Text(latestWarning)
+            .font(AppTheme.Typography.caption())
+            .foregroundColor(.white)
+            .lineLimit(2)
+            .padding(.horizontal, 12)
+            .padding(.vertical, 8)
+            .background(.ultraThinMaterial)
+            .cornerRadius(12)
+            .padding(.horizontal, 16)
+            .padding(.top, 12)
     }
 
     // MARK: - Actions
