@@ -60,6 +60,7 @@ struct ContentView: View {
 
     @State private var processingState: ProcessingState = .idle
     @State private var latestWarning: String = "No warnings yet"
+    @State private var latestHazard: HazardDetection?
     @State private var isActive = false
     @State private var timeUntilNextCheck: TimeInterval = 0
     @State private var warningHistory: [WarningHistory] = []
@@ -251,21 +252,83 @@ struct ContentView: View {
             HStack {
                 Image(systemName: "exclamationmark.triangle.fill")
                     .foregroundColor(AppTheme.Colors.warning)
-                Text("LATEST AI INSIGHT")
+                Text("HAZARD DETECTION")
                     .font(AppTheme.Typography.caption())
                     .foregroundColor(.white.opacity(0.6))
             }
 
-            Text(latestWarning)
-                .font(AppTheme.Typography.body())
-                .foregroundColor(.white)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .fixedSize(horizontal: false, vertical: true)
+            if let hazard = latestHazard {
+                VStack(spacing: 12) {
+                    // Hazard Type Row
+                    HStack {
+                        Text("HAZARD")
+                            .font(.system(size: 11, weight: .semibold, design: .monospaced))
+                            .foregroundColor(.white.opacity(0.5))
+                        Spacer()
+                        Text(hazard.hazardType)
+                            .font(.system(size: 15, weight: .bold, design: .rounded))
+                            .foregroundColor(.white)
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 6)
+                            .background(Color.white.opacity(0.15))
+                            .cornerRadius(8)
+                    }
+                    
+                    // Severity Row
+                    HStack {
+                        Text("SEVERITY")
+                            .font(.system(size: 11, weight: .semibold, design: .monospaced))
+                            .foregroundColor(.white.opacity(0.5))
+                        Spacer()
+                        HStack(spacing: 6) {
+                            Circle()
+                                .fill(Color(red: hazard.severity.color.red, 
+                                          green: hazard.severity.color.green, 
+                                          blue: hazard.severity.color.blue))
+                                .frame(width: 10, height: 10)
+                            Text(hazard.severity.displayName)
+                                .font(.system(size: 15, weight: .bold, design: .rounded))
+                                .foregroundColor(Color(red: hazard.severity.color.red, 
+                                                      green: hazard.severity.color.green, 
+                                                      blue: hazard.severity.color.blue))
+                        }
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 6)
+                        .background(Color(red: hazard.severity.color.red, 
+                                        green: hazard.severity.color.green, 
+                                        blue: hazard.severity.color.blue).opacity(0.2))
+                        .cornerRadius(8)
+                    }
+                    
+                    // Action Row
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text("ACTION")
+                            .font(.system(size: 11, weight: .semibold, design: .monospaced))
+                            .foregroundColor(.white.opacity(0.5))
+                        Text(hazard.action)
+                            .font(.system(size: 16, weight: .medium, design: .default))
+                            .foregroundColor(.white)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                }
                 .opacity(warningOpacity)
+            } else {
+                Text(latestWarning)
+                    .font(AppTheme.Typography.body())
+                    .foregroundColor(.white)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .opacity(warningOpacity)
+            }
         }
         .glassStyle()
         .padding(.horizontal)
-        .onChange(of: latestWarning) { _ in
+        .onChange(of: latestWarning) { newValue in
+            // Parse the new warning into structured format
+            latestHazard = HazardDetection.parse(newValue)
+            
+            // Animate the update
             withAnimation(.easeInOut(duration: 0.3)) {
                 warningOpacity = 0.3
             }
@@ -342,16 +405,42 @@ struct ContentView: View {
     }
 
     private func overlayLatestInsight() -> some View {
-        Text(latestWarning)
-            .font(AppTheme.Typography.caption())
-            .foregroundColor(.white)
-            .lineLimit(2)
-            .padding(.horizontal, 12)
-            .padding(.vertical, 8)
-            .background(.ultraThinMaterial)
-            .cornerRadius(12)
-            .padding(.horizontal, 16)
-            .padding(.top, 12)
+        VStack(alignment: .leading, spacing: 6) {
+            if let hazard = latestHazard {
+                HStack(spacing: 8) {
+                    Circle()
+                        .fill(Color(red: hazard.severity.color.red, 
+                                  green: hazard.severity.color.green, 
+                                  blue: hazard.severity.color.blue))
+                        .frame(width: 8, height: 8)
+                    Text(hazard.hazardType.uppercased())
+                        .font(.system(size: 10, weight: .bold, design: .monospaced))
+                        .foregroundColor(.white)
+                    Text("•")
+                        .foregroundColor(.white.opacity(0.5))
+                    Text(hazard.severity.displayName)
+                        .font(.system(size: 10, weight: .semibold, design: .monospaced))
+                        .foregroundColor(Color(red: hazard.severity.color.red, 
+                                              green: hazard.severity.color.green, 
+                                              blue: hazard.severity.color.blue))
+                }
+                Text(hazard.action)
+                    .font(.system(size: 11, weight: .medium))
+                    .foregroundColor(.white)
+                    .lineLimit(2)
+            } else {
+                Text(latestWarning)
+                    .font(AppTheme.Typography.caption())
+                    .foregroundColor(.white)
+                    .lineLimit(2)
+            }
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 8)
+        .background(.ultraThinMaterial)
+        .cornerRadius(12)
+        .padding(.horizontal, 16)
+        .padding(.top, 12)
     }
 
     // MARK: - Actions
@@ -475,7 +564,11 @@ struct ContentView: View {
             await MainActor.run {
                 processingState = .generatingSpeech
             }
-            let audioData = try await ttsManager.convertToSpeech(warningText)
+            
+            // Parse structured output and convert to natural speech
+            let hazardDetection = HazardDetection.parse(warningText)
+            let speechText = hazardDetection.toSpeechText()
+            let audioData = try await ttsManager.convertToSpeech(speechText)
 
             try Task.checkCancellation()
 

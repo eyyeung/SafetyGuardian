@@ -165,6 +165,103 @@ enum ProcessingState {
     }
 }
 
+// MARK: - Structured Hazard Detection
+
+struct HazardDetection {
+    let hazardType: String
+    let severity: SeverityLevel
+    let action: String
+    let rawText: String
+    
+    enum SeverityLevel: String, CaseIterable {
+        case none = "none"
+        case low = "low"
+        case medium = "medium"
+        case high = "high"
+        case critical = "critical"
+        
+        var color: (red: Double, green: Double, blue: Double) {
+            switch self {
+            case .none:
+                return (0.2, 0.8, 0.2) // Green
+            case .low:
+                return (0.4, 0.8, 1.0) // Light Blue
+            case .medium:
+                return (1.0, 0.8, 0.0) // Yellow
+            case .high:
+                return (1.0, 0.5, 0.0) // Orange
+            case .critical:
+                return (1.0, 0.2, 0.2) // Red
+            }
+        }
+        
+        var displayName: String {
+            return rawValue.uppercased()
+        }
+    }
+    
+    static func parse(_ text: String) -> HazardDetection {
+        // Parse format: "HAZARD: <type> | SEVERITY: <level> | ACTION: <instruction>"
+        let components = text.split(separator: "|").map { $0.trimmingCharacters(in: .whitespaces) }
+        
+        var hazardType = "unknown"
+        var severity = SeverityLevel.none
+        var action = "No action needed"
+        
+        for component in components {
+            if component.uppercased().starts(with: "HAZARD:") {
+                hazardType = component.dropFirst(7).trimmingCharacters(in: .whitespaces)
+            } else if component.uppercased().starts(with: "SEVERITY:") {
+                let severityStr = component.dropFirst(9).trimmingCharacters(in: .whitespaces).lowercased()
+                severity = SeverityLevel(rawValue: severityStr) ?? .none
+            } else if component.uppercased().starts(with: "ACTION:") {
+                action = component.dropFirst(7).trimmingCharacters(in: .whitespaces)
+            }
+        }
+        
+        return HazardDetection(hazardType: hazardType, severity: severity, action: action, rawText: text)
+    }
+    
+    /// Convert structured hazard detection to natural speech text
+    func toSpeechText() -> String {
+        // Handle "clear" or "none" cases - keep it positive and brief
+        if hazardType.lowercased() == "clear" || severity == .none {
+            return "All clear, proceed safely"
+        }
+        
+        // For hazards, compose natural speech based on severity
+        var speechParts: [String] = []
+        
+        // Add severity indicator for medium/high/critical
+        switch severity {
+        case .critical:
+            speechParts.append("Danger!")
+        case .high:
+            speechParts.append("Caution!")
+        case .medium:
+            speechParts.append("Watch out.")
+        case .low, .none:
+            break // No prefix for low severity
+        }
+        
+        // Add hazard type (capitalize first letter for proper speech)
+        let hazardName = hazardType.prefix(1).uppercased() + hazardType.dropFirst()
+        speechParts.append(hazardName)
+        
+        // Add severity level as description (only for medium+)
+        if severity == .high || severity == .critical {
+            speechParts.append("ahead.")
+        } else if severity == .medium {
+            speechParts.append("detected.")
+        }
+        
+        // Add action
+        speechParts.append(action)
+        
+        return speechParts.joined(separator: " ")
+    }
+}
+
 struct WarningHistory: Identifiable, Codable {
     let id: UUID
     let timestamp: Date
