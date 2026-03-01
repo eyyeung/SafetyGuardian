@@ -5,6 +5,7 @@
 AI-powered hazard detection iOS app for elderly safety using camera vision and audio warnings.
 
 **Team:** The Yeungs — Winnie Yeung & Eyan Yeung
+
 **Competition:** [NVIDIA Cosmos Cookoff](https://github.com/orgs/nvidia-cosmos/discussions/4)
 
 **Platform:** iOS 16.0+
