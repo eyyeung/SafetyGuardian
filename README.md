@@ -61,17 +61,15 @@ Edit `Config.plist`:
 - `VLLM_API_KEY`: Bearer token for vLLM server authentication
 - `ELEVENLABS_API_KEY`: Your ElevenLabs API key
 
-### 2. Start the Backend
+### 2. Start the Inference Server
 
 ```bash
-# Start the Nebius VM and vLLM server
-./server/start_safetyguardian_server.sh
-
-# Stop when done
-./server/stop_safetyguardian_server.sh
+cd server/
+cp .env.example .env   # fill in VLLM_API_KEY, MODEL_WEIGHTS_PATH, MEDIA_PATH
+./serve_finetuned_model.sh
 ```
 
-See `server/VLLM_SETUP.md` for detailed vLLM and LoRA serving configuration.
+See `server/VLLM_SETUP.md` for full setup details.
 
 ### 3. Build and Run
 
@@ -101,12 +99,10 @@ SafetyGuardian/
 │   ├── Config.plist.template         #   Configuration template
 │   └── Info.plist
 ├── server/                       # Backend server scripts
-│   ├── serve_finetuned_model.sh  #   vLLM server startup (uv)
-│   ├── pyproject.toml            #   Python dependencies
+│   ├── serve_finetuned_model.sh  #   vLLM server startup script
+│   ├── pyproject.toml            #   Python dependencies (uv)
 │   ├── .env.example              #   Environment variable template
-│   ├── VLLM_SETUP.md             #   vLLM + LoRA serving guide
-│   ├── start_safetyguardian_server.sh  # Start Nebius VM + vLLM
-│   └── stop_safetyguardian_server.sh   # Stop server + VM
+│   └── VLLM_SETUP.md             #   vLLM + LoRA serving guide
 ├── data-curation/                # Training data pipeline
 │   ├── frame_analyzer.py         #   Batch frame analysis with Cosmos-Reason2
 │   ├── training_data.jsonl       #   289 labeled training samples
