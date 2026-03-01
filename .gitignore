@@ -8,8 +8,12 @@ Config.plist
 build.log
 test.log
 vllm.log
+*.log
 TestResults/
 claude_docs/
+
+# Bulk generated videos (keep sample-data/ for demos)
+data-curation/cosmos-generated-videos/
 
 # Xcode
 #

@@ -1,0 +1,507 @@
+[
+  {
+    "video_name": "gemini_ice_avoided",
+    "frame_dir": "outputs/review/gemini_ice_avoided",
+    "done": true
+  },
+  {
+    "video_name": "08DC_leaf_pile",
+    "frame_dir": "outputs/review/08DC_leaf_pile",
+    "done": true
+  },
+  {
+    "video_name": "08DC_jogger_ahead",
+    "frame_dir": "outputs/review/08DC_jogger_ahead",
+    "done": true
+  },
+  {
+    "video_name": "08DC_dog_off_leash",
+    "frame_dir": "outputs/review/08DC_dog_off_leash",
+    "done": true
+  },
+  {
+    "video_name": "08DC_clear_safe",
+    "frame_dir": "outputs/review/08DC_clear_safe",
+    "done": true
+  },
+  {
+    "video_name": "08DC_sudden_curb",
+    "frame_dir": "/home/user/cosmos-predict2.5/outputs/review/08DC_sudden_curb",
+    "done": true
+  },
+  {
+    "video_name": "08DC_wet_leaves",
+    "frame_dir": "/home/user/cosmos-predict2.5/outputs/review/08DC_wet_leaves",
+    "done": true
+  },
+  {
+    "video_name": "0CA0_branch_fallen",
+    "frame_dir": "/home/user/cosmos-predict2.5/outputs/review/0CA0_branch_fallen",
+    "done": true
+  },
+  {
+    "video_name": "0CA0_branch_overhead",
+    "frame_dir": "/home/user/cosmos-predict2.5/outputs/review/0CA0_branch_overhead",
+    "done": true
+  },
+  {
+    "video_name": "0CA0_cone_obstruction",
+    "frame_dir": "/home/user/cosmos-predict2.5/outputs/review/0CA0_cone_obstruction",
+    "done": true
+  },
+  {
+    "video_name": "00B8_clear_path",
+    "frame_dir": "outputs/review/00B8_clear_path",
+    "done": true
+  },
+  {
+    "video_name": "00B8_cyclist_ahead",
+    "frame_dir": "outputs/review/00B8_cyclist_ahead",
+    "done": true
+  },
+  {
+    "video_name": "00B8_cyclist_avoided",
+    "frame_dir": "outputs/review/00B8_cyclist_avoided",
+    "done": true
+  },
+  {
+    "video_name": "00B8_dog_crosses",
+    "frame_dir": "outputs/review/00B8_dog_crosses",
+    "done": true
+  },
+  {
+    "video_name": "00B8_ice_patch",
+    "frame_dir": "outputs/review/00B8_ice_patch",
+    "done": true
+  },
+  {
+    "video_name": "00B8_puddle_spanning",
+    "frame_dir": "outputs/review/00B8_puddle_spanning",
+    "done": true
+  },
+  {
+    "video_name": "00B8_wet_surface",
+    "frame_dir": "outputs/review/00B8_wet_surface",
+    "done": true
+  },
+  {
+    "video_name": "03B1_cone_warning",
+    "frame_dir": "outputs/review/03B1_cone_warning",
+    "done": true
+  },
+  {
+    "video_name": "03B1_debris_water",
+    "frame_dir": "outputs/review/03B1_debris_water",
+    "done": true
+  },
+  {
+    "video_name": "03B1_deep_puddle",
+    "frame_dir": "outputs/review/03B1_deep_puddle",
+    "done": true
+  },
+  {
+    "video_name": "03B1_flood_severe",
+    "frame_dir": "outputs/review/03B1_flood_severe",
+    "done": true
+  },
+  {
+    "video_name": "03B1_path_narrowed",
+    "frame_dir": "outputs/review/03B1_path_narrowed",
+    "done": true
+  },
+  {
+    "video_name": "03B1_soft_ground",
+    "frame_dir": "outputs/review/03B1_soft_ground",
+    "done": true
+  },
+  {
+    "video_name": "3A7A_ice_avoided",
+    "frame_dir": "outputs/review/3A7A_ice_avoided",
+    "done": true
+  },
+  {
+    "video_name": "3A7A_ice_slip",
+    "frame_dir": "outputs/review/3A7A_ice_slip",
+    "done": true
+  },
+  {
+    "video_name": "gemini_ice_slip",
+    "frame_dir": "outputs/review/gemini_ice_slip",
+    "done": true
+  },
+  {
+    "video_name": "0CA0_dark_canopy",
+    "frame_dir": "/home/user/cosmos-predict2.5/outputs/review/0CA0_dark_canopy",
+    "done": true
+  },
+  {
+    "video_name": "0CA0_icy_bridge",
+    "frame_dir": "/home/user/cosmos-predict2.5/outputs/review/0CA0_icy_bridge",
+    "done": true
+  },
+  {
+    "video_name": "0CA0_narrow_bridge",
+    "frame_dir": "/home/user/cosmos-predict2.5/outputs/review/0CA0_narrow_bridge",
+    "done": true
+  },
+  {
+    "video_name": "320A_child_bike",
+    "frame_dir": "/home/user/cosmos-predict2.5/outputs/review/320A_child_bike",
+    "done": true
+  },
+  {
+    "video_name": "320A_clear_safe",
+    "frame_dir": "/home/user/cosmos-predict2.5/outputs/review/320A_clear_safe",
+    "done": true
+  },
+  {
+    "video_name": "320A_dog_leash",
+    "frame_dir": "/home/user/cosmos-predict2.5/outputs/review/320A_dog_leash",
+    "done": true
+  },
+  {
+    "video_name": "320A_fallen_branch",
+    "frame_dir": "/home/user/cosmos-predict2.5/outputs/review/320A_fallen_branch",
+    "done": true
+  },
+  {
+    "video_name": "320A_ice_shaded",
+    "frame_dir": "/home/user/cosmos-predict2.5/outputs/review/320A_ice_shaded",
+    "done": true
+  },
+  {
+    "video_name": "320A_jogger_group",
+    "frame_dir": "/home/user/cosmos-predict2.5/outputs/review/320A_jogger_group",
+    "done": true
+  },
+  {
+    "video_name": "3A7A_clear_path",
+    "frame_dir": "/home/user/cosmos-predict2.5/outputs/review/3A7A_clear_path",
+    "done": true
+  },
+  {
+    "video_name": "3A7A_icy_puddle",
+    "frame_dir": "/home/user/cosmos-predict2.5/outputs/review/3A7A_icy_puddle",
+    "done": true
+  },
+  {
+    "video_name": "3A7A_muddy_edge",
+    "frame_dir": "/home/user/cosmos-predict2.5/outputs/review/3A7A_muddy_edge",
+    "done": true
+  },
+  {
+    "video_name": "3A7A_puddle_deep",
+    "frame_dir": "/home/user/cosmos-predict2.5/outputs/review/3A7A_puddle_deep",
+    "done": true
+  },
+  {
+    "video_name": "3A7A_puddle_full",
+    "frame_dir": "/home/user/cosmos-predict2.5/outputs/review/3A7A_puddle_full",
+    "done": true
+  },
+  {
+    "video_name": "3A7A_puddle_growing",
+    "frame_dir": "/home/user/cosmos-predict2.5/outputs/review/3A7A_puddle_growing",
+    "done": true
+  },
+  {
+    "video_name": "4D74_clear_intersection",
+    "frame_dir": "/home/user/cosmos-predict2.5/outputs/review/4D74_clear_intersection",
+    "done": true
+  },
+  {
+    "video_name": "4D74_cyclist_fast",
+    "frame_dir": "/home/user/cosmos-predict2.5/outputs/review/4D74_cyclist_fast",
+    "done": true
+  },
+  {
+    "video_name": "4D74_icy_intersection",
+    "frame_dir": "/home/user/cosmos-predict2.5/outputs/review/4D74_icy_intersection",
+    "done": true
+  },
+  {
+    "video_name": "4D74_pedestrian_crossing",
+    "frame_dir": "/home/user/cosmos-predict2.5/outputs/review/4D74_pedestrian_crossing",
+    "done": true
+  },
+  {
+    "video_name": "4D74_vehicle_pullout",
+    "frame_dir": "/home/user/cosmos-predict2.5/outputs/review/4D74_vehicle_pullout",
+    "done": true
+  },
+  {
+    "video_name": "4D74_wet_intersection",
+    "frame_dir": "/home/user/cosmos-predict2.5/outputs/review/4D74_wet_intersection",
+    "done": true
+  },
+  {
+    "video_name": "6AEA_car_approaching",
+    "frame_dir": "/home/user/cosmos-predict2.5/outputs/review/6AEA_car_approaching",
+    "done": true
+  },
+  {
+    "video_name": "6AEA_guardrail_gap",
+    "frame_dir": "/home/user/cosmos-predict2.5/outputs/review/6AEA_guardrail_gap",
+    "done": true
+  },
+  {
+    "video_name": "6AEA_path_road_merge",
+    "frame_dir": "/home/user/cosmos-predict2.5/outputs/review/6AEA_path_road_merge",
+    "done": true
+  },
+  {
+    "video_name": "6AEA_vehicle_blocking",
+    "frame_dir": "/home/user/cosmos-predict2.5/outputs/review/6AEA_vehicle_blocking",
+    "done": true
+  },
+  {
+    "video_name": "6AEA_wet_after_rain",
+    "frame_dir": "/home/user/cosmos-predict2.5/outputs/review/6AEA_wet_after_rain",
+    "done": true
+  },
+  {
+    "video_name": "6AEA_wet_dark",
+    "frame_dir": "/home/user/cosmos-predict2.5/outputs/review/6AEA_wet_dark",
+    "done": true
+  },
+  {
+    "video_name": "6F0C_fence_gap",
+    "frame_dir": "/home/user/cosmos-predict2.5/outputs/review/6F0C_fence_gap",
+    "done": true
+  },
+  {
+    "video_name": "6F0C_icy_edges",
+    "frame_dir": "/home/user/cosmos-predict2.5/outputs/review/6F0C_icy_edges",
+    "done": true
+  },
+  {
+    "video_name": "6F0C_path_narrows",
+    "frame_dir": "/home/user/cosmos-predict2.5/outputs/review/6F0C_path_narrows",
+    "done": true
+  },
+  {
+    "video_name": "6F0C_person_ahead",
+    "frame_dir": "/home/user/cosmos-predict2.5/outputs/review/6F0C_person_ahead",
+    "done": true
+  },
+  {
+    "video_name": "6F0C_person_stops",
+    "frame_dir": "/home/user/cosmos-predict2.5/outputs/review/6F0C_person_stops",
+    "done": true
+  },
+  {
+    "video_name": "6F0C_shaded_ice",
+    "frame_dir": "/home/user/cosmos-predict2.5/outputs/review/6F0C_shaded_ice",
+    "done": true
+  },
+  {
+    "video_name": "7D19_bollard_center",
+    "frame_dir": "/home/user/cosmos-predict2.5/outputs/review/7D19_bollard_center",
+    "done": true
+  },
+  {
+    "video_name": "7D19_clear_path",
+    "frame_dir": "/home/user/cosmos-predict2.5/outputs/review/7D19_clear_path",
+    "done": true
+  },
+  {
+    "video_name": "7D19_flooded_obstacle",
+    "frame_dir": "/home/user/cosmos-predict2.5/outputs/review/7D19_flooded_obstacle",
+    "done": true
+  },
+  {
+    "video_name": "7D19_puddle_spanning",
+    "frame_dir": "/home/user/cosmos-predict2.5/outputs/review/7D19_puddle_spanning",
+    "done": true
+  },
+  {
+    "video_name": "7D19_slippery_approach",
+    "frame_dir": "/home/user/cosmos-predict2.5/outputs/review/7D19_slippery_approach",
+    "done": true
+  },
+  {
+    "video_name": "7D19_water_bollard",
+    "frame_dir": "/home/user/cosmos-predict2.5/outputs/review/7D19_water_bollard",
+    "done": true
+  },
+  {
+    "video_name": "9FA8_clear_section",
+    "frame_dir": "/home/user/cosmos-predict2.5/outputs/review/9FA8_clear_section",
+    "done": true
+  },
+  {
+    "video_name": "9FA8_crack_wet",
+    "frame_dir": "/home/user/cosmos-predict2.5/outputs/review/9FA8_crack_wet",
+    "done": true
+  },
+  {
+    "video_name": "9FA8_cracked_pavement",
+    "frame_dir": "/home/user/cosmos-predict2.5/outputs/review/9FA8_cracked_pavement",
+    "done": true
+  },
+  {
+    "video_name": "9FA8_heaved_asphalt",
+    "frame_dir": "/home/user/cosmos-predict2.5/outputs/review/9FA8_heaved_asphalt",
+    "done": true
+  },
+  {
+    "video_name": "9FA8_major_crack",
+    "frame_dir": "/home/user/cosmos-predict2.5/outputs/review/9FA8_major_crack",
+    "done": true
+  },
+  {
+    "video_name": "9FA8_uneven_surface",
+    "frame_dir": "/home/user/cosmos-predict2.5/outputs/review/9FA8_uneven_surface",
+    "done": true
+  },
+  {
+    "video_name": "AC8E_clear_safe",
+    "frame_dir": "/home/user/cosmos-predict2.5/outputs/review/AC8E_clear_safe",
+    "done": true
+  },
+  {
+    "video_name": "AC8E_dog_walker",
+    "frame_dir": "/home/user/cosmos-predict2.5/outputs/review/AC8E_dog_walker",
+    "done": true
+  },
+  {
+    "video_name": "AC8E_person_ahead",
+    "frame_dir": "/home/user/cosmos-predict2.5/outputs/review/AC8E_person_ahead",
+    "done": true
+  },
+  {
+    "video_name": "AC8E_person_turns",
+    "frame_dir": "/home/user/cosmos-predict2.5/outputs/review/AC8E_person_turns",
+    "done": true
+  },
+  {
+    "video_name": "AC8E_stroller",
+    "frame_dir": "/home/user/cosmos-predict2.5/outputs/review/AC8E_stroller",
+    "done": true
+  },
+  {
+    "video_name": "AC8E_two_walkers",
+    "frame_dir": "/home/user/cosmos-predict2.5/outputs/review/AC8E_two_walkers",
+    "done": true
+  },
+  {
+    "video_name": "C77A_blind_curve",
+    "frame_dir": "/home/user/cosmos-predict2.5/outputs/review/C77A_blind_curve",
+    "done": true
+  },
+  {
+    "video_name": "C77A_branch_curve",
+    "frame_dir": "/home/user/cosmos-predict2.5/outputs/review/C77A_branch_curve",
+    "done": true
+  },
+  {
+    "video_name": "C77A_clear_curve",
+    "frame_dir": "/home/user/cosmos-predict2.5/outputs/review/C77A_clear_curve",
+    "done": true
+  },
+  {
+    "video_name": "C77A_cyclist_curve",
+    "frame_dir": "/home/user/cosmos-predict2.5/outputs/review/C77A_cyclist_curve",
+    "done": true
+  },
+  {
+    "video_name": "C77A_path_edge_drop",
+    "frame_dir": "/home/user/cosmos-predict2.5/outputs/review/C77A_path_edge_drop",
+    "done": true
+  },
+  {
+    "video_name": "C77A_wet_leaves_curve",
+    "frame_dir": "/home/user/cosmos-predict2.5/outputs/review/C77A_wet_leaves_curve",
+    "done": true
+  },
+  {
+    "video_name": "DEE7_algae_wet",
+    "frame_dir": "/home/user/cosmos-predict2.5/outputs/review/DEE7_algae_wet",
+    "done": true
+  },
+  {
+    "video_name": "DEE7_flooded_riverside",
+    "frame_dir": "/home/user/cosmos-predict2.5/outputs/review/DEE7_flooded_riverside",
+    "done": true
+  },
+  {
+    "video_name": "DEE7_icy_riverside",
+    "frame_dir": "/home/user/cosmos-predict2.5/outputs/review/DEE7_icy_riverside",
+    "done": true
+  },
+  {
+    "video_name": "DEE7_puddle_full_width",
+    "frame_dir": "/home/user/cosmos-predict2.5/outputs/review/DEE7_puddle_full_width",
+    "done": true
+  },
+  {
+    "video_name": "DEE7_slippery_shadow",
+    "frame_dir": "/home/user/cosmos-predict2.5/outputs/review/DEE7_slippery_shadow",
+    "done": true
+  },
+  {
+    "video_name": "DEE7_water_encroaching",
+    "frame_dir": "/home/user/cosmos-predict2.5/outputs/review/DEE7_water_encroaching",
+    "done": true
+  },
+  {
+    "video_name": "E509_boulder_edge",
+    "frame_dir": "/home/user/cosmos-predict2.5/outputs/review/E509_boulder_edge",
+    "done": true
+  },
+  {
+    "video_name": "E509_boulders_blocking",
+    "frame_dir": "/home/user/cosmos-predict2.5/outputs/review/E509_boulders_blocking",
+    "done": true
+  },
+  {
+    "video_name": "E509_debris_wet",
+    "frame_dir": "/home/user/cosmos-predict2.5/outputs/review/E509_debris_wet",
+    "done": true
+  },
+  {
+    "video_name": "E509_snow_narrows",
+    "frame_dir": "/home/user/cosmos-predict2.5/outputs/review/E509_snow_narrows",
+    "done": true
+  },
+  {
+    "video_name": "E509_snow_spill",
+    "frame_dir": "/home/user/cosmos-predict2.5/outputs/review/E509_snow_spill",
+    "done": true
+  },
+  {
+    "video_name": "E509_wet_curve",
+    "frame_dir": "/home/user/cosmos-predict2.5/outputs/review/E509_wet_curve",
+    "done": true
+  },
+  {
+    "video_name": "E900_child_running",
+    "frame_dir": "/home/user/cosmos-predict2.5/outputs/review/E900_child_running",
+    "done": true
+  },
+  {
+    "video_name": "E900_clear_intersection",
+    "frame_dir": "/home/user/cosmos-predict2.5/outputs/review/E900_clear_intersection",
+    "done": true
+  },
+  {
+    "video_name": "E900_clear_open",
+    "frame_dir": "/home/user/cosmos-predict2.5/outputs/review/E900_clear_open",
+    "done": true
+  },
+  {
+    "video_name": "E900_cyclist_approaching",
+    "frame_dir": "/home/user/cosmos-predict2.5/outputs/review/E900_cyclist_approaching",
+    "done": true
+  },
+  {
+    "video_name": "E900_dog_running",
+    "frame_dir": "/home/user/cosmos-predict2.5/outputs/review/E900_dog_running",
+    "done": true
+  },
+  {
+    "video_name": "E900_ice_forming",
+    "frame_dir": "/home/user/cosmos-predict2.5/outputs/review/E900_ice_forming",
+    "done": true
+  }
+]
