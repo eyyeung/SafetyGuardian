@@ -1,0 +1,411 @@
+{
+  "_instructions": "Add your comments for each video below. Keys are video names. 'rating' is 1-5, 'notes' is freetext.",
+  "_example": {
+    "rating": 3,
+    "notes": "Scene looks good but hazard not visible enough. Prompt needs more emphasis on foreground."
+  },
+  "gemini_ice_avoided": {
+    "rating": 4,
+    "notes": "Initial bad frames. Middle is usable. Pair with stop, icy surface labels."
+  },
+  "gemini_ice_slip": {
+    "rating": 1,
+    "notes": "don't use"
+  },
+  "00B8_clear_path": {
+    "rating": null,
+    "notes": ""
+  },
+  "00B8_cyclist_ahead": {
+    "rating": null,
+    "notes": ""
+  },
+  "00B8_cyclist_avoided": {
+    "rating": 4.5,
+    "notes": "Quite good. Try not to extract frames where the first-person object displays some wheel-like artifact."
+  },
+  "00B8_dog_crosses": {
+    "rating": 1,
+    "notes": "the dog did not appear ahead.weird angle."
+  },
+  "00B8_ice_patch": {
+    "rating": 3,
+    "notes": "weird camera angle shift. use only the later half of the video where icy surfact appears."
+  },
+  "00B8_puddle_spanning": {
+    "rating": 3.5,
+    "notes": "use the videos from the frame where the puddle appears. don't use the frames before then."
+  },
+  "00B8_wet_surface": {
+    "rating": 5,
+    "notes": "good. pair with rainingi outside, please walk slowly."
+  },
+  "03B1_cone_warning": {
+    "rating": 2,
+    "notes": "the video zoomed in too much."
+  },
+  "03B1_debris_water": {
+    "rating": null,
+    "notes": "use the videos from the frame where the puddle appears. don't use the frames before then."
+  },
+  "03B1_deep_puddle": {
+    "rating": 2,
+    "notes": "the deep puddle looks odd. do not use."
+  },
+  "03B1_flood_severe": {
+    "rating": 2,
+    "notes": "camera angle altered too much, non-continuation. do not use"
+  },
+  "3A7A_ice_avoided": {
+    "rating": 3,
+    "notes": "use the videos from the frame where the icy surface appears. don't use the frames before then. labels should be icy slippery surface. turn back or ask for assistance."
+  },
+  "3A7A_ice_slip": {
+    "rating": 2,
+    "notes": "use only the frames where we can see clear slippery ice surface but with NO APPEARANCE of human foot. it should be paired with label: icy surface, turn back or ask for assitance."
+  },
+  "03B1_path_narrowed": {
+    "rating": 5,
+    "notes": "usual. warning for the pole at the end of the road."
+  },
+  "03B1_soft_ground": {
+    "rating": 5,
+    "notes": "usable"
+  },
+  "08DC_clear_safe": {
+    "rating": 5,
+    "notes": "usable"
+  },
+  "08DC_dog_off_leash": {
+    "rating": 5,
+    "notes": "good. usable."
+  },
+  "08DC_jogger_ahead": {
+    "rating": 5,
+    "notes": "great video. highly usable."
+  },
+  "08DC_leaf_pile": {
+    "rating": 5,
+    "notes": "use the frames from where the leaf piles are already on the ground. label as leaf piles on your right, please avoid."
+  },
+  "08DC_sudden_curb": {
+    "rating": 5,
+    "notes": "smooth path."
+  },
+  "08DC_wet_leaves": {
+    "rating": 1,
+    "notes": "use the videos from the frame where the wet leaves appears. don't use the frames before then. a bit unrealistic"
+  },
+  "0CA0_branch_fallen": {
+    "rating": 1,
+    "notes": "not useful"
+  },
+  "0CA0_branch_overhead": {
+    "rating": 1,
+    "notes": "too sudden.. should zoom in from far. wrong perspective"
+  },
+  "0CA0_cone_obstruction": {
+    "rating": 5,
+    "notes": "good"
+  },
+  "0CA0_dark_canopy": {
+    "rating": 2,
+    "notes": "use the videos from the frame where the dark canopy appears. don't use the frames before then."
+  },
+  "0CA0_icy_bridge": {
+    "rating": 1,
+    "notes": "unreliastic. don't use"
+  },
+  "0CA0_narrow_bridge": {
+    "rating": 5,
+    "notes": "normal video"
+  },
+  "320A_child_bike": {
+    "rating": 4,
+    "notes": "usable"
+  },
+  "320A_clear_safe": {
+    "rating": 5,
+    "notes": ""
+  },
+  "320A_dog_leash": {
+    "rating": 1,
+    "notes": "the leash is in the way blocking the view. don't use"
+  },
+  "320A_fallen_branch": {
+    "rating": 5,
+    "notes": "use the videos from the frame where the fallen branch appears. don't use the frames before then."
+  },
+  "320A_ice_shaded": {
+    "rating": 1,
+    "notes": "don't use. "
+  },
+  "320A_jogger_group": {
+    "rating": 5,
+    "notes": "can use"
+  },
+  "3A7A_clear_path": {
+    "rating": 5,
+    "notes": ""
+  },
+  "3A7A_icy_puddle": {
+    "rating": 5,
+    "notes": "use the frames where the icy puddle appears in full view. don't use the frames before then."
+  },
+  "3A7A_muddy_edge": {
+    "rating": 5,
+    "notes": ""
+  },
+  "3A7A_puddle_deep": {
+    "rating": 5,
+    "notes": "use the frames where the puddle appears fully. don't use the frames before then."
+  },
+  "3A7A_puddle_full": {
+    "rating": 4,
+    "notes": "use the frames where the puddle appears fully. don't use the frames before then."
+  },
+  "3A7A_puddle_growing": {
+    "rating": 4,
+    "notes": "use the frames where the puddle appears fully. don't use the frames before then."
+  },
+  "4D74_clear_intersection": {
+    "rating": 5,
+    "notes": ""
+  },
+  "4D74_cyclist_fast": {
+    "rating": 5,
+    "notes": ""
+  },
+  "4D74_icy_intersection": {
+    "rating": 3,
+    "notes": "use the frames where the icy surface appears fully at 0:02. don't use the frames before then."
+  },
+  "4D74_pedestrian_crossing": {
+    "rating": 3,
+    "notes": ""
+  },
+  "4D74_vehicle_pullout": {
+    "rating": 5,
+    "notes": ""
+  },
+  "4D74_wet_intersection": {
+    "rating": 5,
+    "notes": "beginning to rain"
+  },
+  "6AEA_car_approaching": {
+    "rating": 3,
+    "notes": ""
+  },
+  "6AEA_guardrail_gap": {
+    "rating": 5,
+    "notes": "clear path"
+  },
+  "6AEA_path_road_merge": {
+    "rating": 5,
+    "notes": ""
+  },
+  "6AEA_vehicle_blocking": {
+    "rating": 1,
+    "notes": "not usable"
+  },
+  "6AEA_wet_after_rain": {
+    "rating": 5,
+    "notes": "clear path"
+  },
+  "6AEA_wet_dark": {
+    "rating": 1,
+    "notes": "don't use"
+  },
+  "6F0C_fence_gap": {
+    "rating": 1,
+    "notes": "don't use"
+  },
+  "6F0C_icy_edges": {
+    "rating": 5,
+    "notes": ""
+  },
+  "6F0C_path_narrows": {
+    "rating": 1,
+    "notes": "don't use"
+  },
+  "6F0C_person_ahead": {
+    "rating": 5,
+    "notes": ""
+  },
+  "6F0C_person_stops": {
+    "rating": 5,
+    "notes": ""
+  },
+  "6F0C_shaded_ice": {
+    "rating": 1,
+    "notes": "don't use"
+  },
+  "7D19_bollard_center": {
+    "rating": 3,
+    "notes": "use the frames where the bollard appears fully. don't use the frames before then."
+  },
+  "7D19_clear_path": {
+    "rating": 5,
+    "notes": ""
+  },
+  "7D19_flooded_obstacle": {
+    "rating": 3,
+    "notes": "use the frames where the flood appears fully. don't use the frames before then."
+  },
+  "7D19_puddle_spanning": {
+    "rating": 3,
+    "notes": "use the frames where the puddle spans fully. don't use the frames before then."
+  },
+  "7D19_slippery_approach": {
+    "rating": 5,
+    "notes": ""
+  },
+  "7D19_water_bollard": {
+    "rating": 3,
+    "notes": "use the frames where the water bollards appears fully. don't use the frames before then."
+  },
+  "9FA8_clear_section": {
+    "rating": 5,
+    "notes": ""
+  },
+  "9FA8_crack_wet": {
+    "rating": 1,
+    "notes": "don't use"
+  },
+  "9FA8_cracked_pavement": {
+    "rating": 1,
+    "notes": "don't use"
+  },
+  "9FA8_heaved_asphalt": {
+    "rating": 1,
+    "notes": "don't use"
+  },
+  "9FA8_major_crack": {
+    "rating": 1,
+    "notes": "don't use"
+  },
+  "9FA8_uneven_surface": {
+    "rating": 1,
+    "notes": "don't use"
+  },
+  "AC8E_clear_safe": {
+    "rating": 5,
+    "notes": ""
+  },
+  "AC8E_dog_walker": {
+    "rating": 3,
+    "notes": ""
+  },
+  "AC8E_person_ahead": {
+    "rating": 3,
+    "notes": ""
+  },
+  "AC8E_person_turns": {
+    "rating": 1,
+    "notes": "don't use"
+  },
+  "AC8E_stroller": {
+    "rating": 3,
+    "notes": ""
+  },
+  "AC8E_two_walkers": {
+    "rating": 4,
+    "notes": ""
+  },
+  "C77A_blind_curve": {
+    "rating": 1,
+    "notes": ""
+  },
+  "C77A_branch_curve": {
+    "rating": 3,
+    "notes": "use the frames where the branch curves appears fully. don't use the frames before then."
+  },
+  "C77A_clear_curve": {
+    "rating": 5,
+    "notes": ""
+  },
+  "C77A_cyclist_curve": {
+    "rating": 5,
+    "notes": ""
+  },
+  "C77A_path_edge_drop": {
+    "rating": 1,
+    "notes": "don't use"
+  },
+  "C77A_wet_leaves_curve": {
+    "rating": 1,
+    "notes": "don't use"
+  },
+  "DEE7_algae_wet": {
+    "rating": 5,
+    "notes": ""
+  },
+  "DEE7_flooded_riverside": {
+    "rating": 1,
+    "notes": "don't use"
+  },
+  "DEE7_icy_riverside": {
+    "rating": 1,
+    "notes": "don't use"
+  },
+  "DEE7_puddle_full_width": {
+    "rating": 3,
+    "notes": "use the frames where the puddle appears fully. don't use the frames before then."
+  },
+  "DEE7_slippery_shadow": {
+    "rating": 1,
+    "notes": "don't use"
+  },
+  "DEE7_water_encroaching": {
+    "rating": 1,
+    "notes": "don't use"
+  },
+  "E509_boulder_edge": {
+    "rating": 1,
+    "notes": "don't use"
+  },
+  "E509_boulders_blocking": {
+    "rating": 3,
+    "notes": "use the frames where the boulders appears fully. don't use the frames before then."
+  },
+  "E509_debris_wet": {
+    "rating": 1,
+    "notes": "don't use"
+  },
+  "E509_snow_narrows": {
+    "rating": 1,
+    "notes": "don't use"
+  },
+  "E509_snow_spill": {
+    "rating": 3,
+    "notes": "use the frames where you can see the reflective surface"
+  },
+  "E509_wet_curve": {
+    "rating": 5,
+    "notes": ""
+  },
+  "E900_child_running": {
+    "rating": 4,
+    "notes": ""
+  },
+  "E900_clear_intersection": {
+    "rating": 5,
+    "notes": ""
+  },
+  "E900_clear_open": {
+    "rating": 5,
+    "notes": ""
+  },
+  "E900_cyclist_approaching": {
+    "rating": 5,
+    "notes": ""
+  },
+  "E900_dog_running": {
+    "rating": 5,
+    "notes": ""
+  },
+  "E900_ice_forming": {
+    "rating": 1,
+    "notes": "don't use"
+  }
+}

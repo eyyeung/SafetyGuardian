@@ -9,8 +9,12 @@ serve_finetuned_model.sh
 build.log
 test.log
 vllm.log
+*.log
 TestResults/
 claude_docs/
+
+# Bulk generated videos (keep sample-data/ for demos)
+data-curation/cosmos-generated-videos/
 
 # Xcode
 #
@@ -18,6 +22,7 @@ claude_docs/
 
 ## User settings
 xcuserdata/
+*.xcworkspace/xcshareddata/
 
 ## compatibility with Xcode 8 and earlier (ignoring not required starting Xcode 9)
 *.xcscmblueprint
