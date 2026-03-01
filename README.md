@@ -1,6 +1,6 @@
 # SafetyGuardian
 
-<img src="logo.png" alt="SafetyGuardian logo" width="100" height="100" />
+<img src="app/logo.png" alt="SafetyGuardian logo" width="100" height="100" />
 
 AI-powered hazard detection iOS app for elderly safety using camera vision and audio warnings.
 
@@ -125,10 +125,8 @@ SafetyGuardian/
 │   ├── TRAINING_PIPELINE.md      #   End-to-end pipeline documentation
 │   ├── trl_sft_safety_guardian.py #  TRL SFT training script (QLoRA)
 │   └── finetune_instructions.md  #   Fine-tuning guidelines
-├── Config.plist.template         # Configuration template
-├── Info.plist                    # iOS app metadata & permissions
-├── Assets.xcassets/              # App icons
-└── docs/                         # Additional documentation
+├── README.md
+└── app/logo.png                  # App logo
 ```
 
 ## Training Pipeline
@@ -181,7 +179,7 @@ Never commit:
 ## Running Tests
 
 ```bash
-./run_tests.sh
+./app/run_tests.sh
 ```
 
 ## License
