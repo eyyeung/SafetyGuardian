@@ -37,7 +37,8 @@ cp Config.plist.template Config.plist
 ```
 
 Edit `Config.plist`:
-- `VLLM_SERVER_URL`: Your vLLM server endpoint
+- `VLLM_SERVER_URL`: Your vLLM server endpoint (e.g. `http://89.169.110.39:8000/v1`)
+- `VLLM_API_KEY`: Your vLLM Bearer token (must match `VLLM_API_KEY` in server `.env`)
 - `ELEVENLABS_API_KEY`: Your ElevenLabs API key
 
 ### 2. Build and Run
@@ -53,12 +54,45 @@ xcodebuild -scheme SafetyGuardian \
   -allowProvisioningUpdates build
 ```
 
-### 3. Backend Requirements
+### 3. Inference Server Setup
 
-- vLLM server running Cosmos-Reason2-2B model
-- ElevenLabs API account for TTS
+The app connects to a vLLM server hosting the fine-tuned Cosmos-Reason2-2B model with a LoRA adapter. To run the inference server on a GPU instance (e.g. Nebius L40S):
 
-See `docs/QUICK_START.md` for detailed setup instructions.
+**Prerequisites:**
+- Python 3.10+
+- [uv](https://docs.astral.sh/uv/getting-started/installation/) installed
+- CUDA 12.8 compatible GPU
+
+**Install dependencies:**
+```bash
+uv sync
+```
+
+**Configure your API key:**
+```bash
+cp .env.example .env   # then set VLLM_API_KEY to a secret value
+```
+
+**Start the server:**
+```bash
+./serve_finetuned_model.sh
+```
+
+This will:
+1. Kill any existing vLLM processes
+2. Load `.env` for the API key
+3. Run `uv sync` to install dependencies
+4. Start vLLM on port 8000 with the `cosmos-safety` LoRA adapter
+
+**Update `Config.plist`** with your server's address and API key:
+```xml
+<key>VLLM_SERVER_URL</key>
+<string>http://YOUR_SERVER_IP:8000/v1</string>
+<key>VLLM_API_KEY</key>
+<string>your_api_key_here</string>
+```
+
+See `VLLM_SETUP.md` for full details on model weights and server configuration.
 
 ## Architecture
 
@@ -78,20 +112,27 @@ See `docs/QUICK_START.md` for detailed setup instructions.
 
 ```
 SafetyGuardian/
-├── Sources/SafetyGuardian/    # Swift source code
-│   ├── SafetyGuardianApp.swift
-│   ├── ContentView.swift
-│   ├── Configuration.swift
-│   ├── Models.swift
-│   ├── CameraManager.swift
-│   ├── CosmosAPI.swift
-│   ├── TTSManager.swift
-│   └── AudioPlayer.swift
-├── Tests/                     # Unit and integration tests
-├── Config.plist.template      # Configuration template
-├── Info.plist                 # iOS app metadata
-└── docs/                      # Documentation
-
+├── app/                            # iOS app
+│   ├── SafetyGuardian.xcodeproj
+│   ├── Sources/SafetyGuardian/     # Swift source code
+│   │   ├── SafetyGuardianApp.swift
+│   │   ├── ContentView.swift
+│   │   ├── Configuration.swift
+│   │   ├── Models.swift
+│   │   ├── CameraManager.swift
+│   │   ├── CosmosAPI.swift
+│   │   ├── TTSManager.swift
+│   │   └── AudioPlayer.swift
+│   ├── Tests/                      # Unit and integration tests
+│   ├── Config.plist.template       # Configuration template (copy to Config.plist)
+│   └── Info.plist
+├── inference/                      # vLLM inference server
+│   ├── serve_finetuned_model.sh    # Server startup script
+│   ├── pyproject.toml              # Python dependencies
+│   ├── VLLM_SETUP.md              # Detailed server setup guide
+│   └── .env.example                # Environment variable template
+├── README.md
+└── logo.png
 ```
 
 ## Security
