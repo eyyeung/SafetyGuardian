@@ -55,7 +55,13 @@ The cycle repeats every 20 seconds (configurable 5-60s in-app).
 
 ### App Screenshots
 
-<img src="app/assets/app-screenshot-main.png" width="280" /> <img src="app/assets/app-screenshot-settings.png" width="280" />
+**Main**
+
+<img src="app/assets/app-screenshot-main.png" width="600" />
+
+**Settings**
+
+<img src="app/assets/app-screenshot-settings.png" width="280" />
 
 
 ## Quick Start
